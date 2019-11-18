@@ -54,15 +54,15 @@ register_pass = register_tests.register_pass('mrhi01')
 print(register_pass)
 
 register_tests.register_inputs('mrhi02', 'FiencX02', 'FiencX02')
-register_pass = register_tests.register_pass('mrhi01')
+register_pass = register_tests.register_pass('mrhi02')
 print(register_pass)
 
 register_tests.register_inputs('mrhi03', 'jcnen&*63hx01', 'jcnen&*63hx01')
-register_pass = register_tests.register_pass('mrhi01')
+register_pass = register_tests.register_pass('mrhi03')
 print(register_pass)
 
 register_tests.register_inputs('mrhi04', 'passfor4', 'passfor4')
-register_pass = register_tests.register_pass('mrhi01')
+register_pass = register_tests.register_pass('mrhi04')
 print(register_pass)
 
 register_tests.register_inputs('a', '123', '132')

@@ -7,6 +7,9 @@ class FollowTests:
         self.driver = driver
 
     def follow_inputs(self, username):
+        #Click the follow link
+        self.driver.find_element_by_id('follow-link').click()
+        
         #Send keys to the follow box
         self.driver.find_element_by_id('follow-box').send_keys(username)
         
