@@ -9,8 +9,23 @@ function togglePostMenu() {
         userPost.style.display = 'none';
         posts.style.display = 'block';
     }
+}
 
-    // return true;
+function togglePosts() {
+    let posts = document.getElementById('posts');
+    let followBox = document.getElementById('follow-box');
+    let usersDiv = document.getElementById('users');
+
+    if (posts.style.display == '') {
+        posts.style.display = 'none';
+        followBox.style.display = 'block';
+    }
+    else {
+        followBox.style.display = 'none';
+        posts.style.display = '';
+    }
+    
+    usersDiv.style.display = 'none';
 }
 
 function post() {
@@ -81,7 +96,8 @@ function toggleCommentMenu(postID) {
 }
 
 function toggleFollowMenu() {
-
+    console.log("Toggled follow menu");
+    togglePosts();
 }
 
 function Follow(username) {
@@ -131,6 +147,8 @@ function Unfollow(username) {
 
 function userQuery(prefix) {
     let usersDiv = document.getElementById('users');
+    usersDiv.style.display = 'block';
+    
     if (prefix.trim() != '') {
         let XHR = new XMLHttpRequest();
         // let formData = new FormData();

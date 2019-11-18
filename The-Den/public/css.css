@@ -170,6 +170,7 @@ a {
     border: 0px solid #37ff91;
     background: #303030;
     font: inherit;
+    display: none;
 }
 
 .follow-button {
