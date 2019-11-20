@@ -16,5 +16,23 @@ class FollowTests:
         #Wait for one second for the users div to populate
         self.driver.implicitly_wait(1)
 
+        self.driver.find_element_by_class_name('user')
+    
+    def validate_users(self, users):
+        users_in_page = self.driver.find_elements_by_class_name('username')
 
-        print(self.driver.page_source)
+        #Sort the users we are supposed to see, sort the users we see
+        users = sorted(users)
+        users_in_page = sorted(self.__return_elements_as_text(users_in_page))
+
+        #Check equality
+        return users_in_page == users
+
+    # def follow_user(self, user):
+
+
+    def __return_elements_as_text(self, elements):
+        text_list = []
+        for i in range(len(elements)):
+            text_list.append(elements[i].text)
+        return text_list

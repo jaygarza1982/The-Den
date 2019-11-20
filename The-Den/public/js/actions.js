@@ -185,6 +185,6 @@ function userQuery(prefix) {
 }
 
 function getUserDisplayHTML(username, followingStatus) {
-    let display = '<ul class="user"><li>USERNAME</li><li><input type="button" class="follow-button" value="Follow" onclick="Follow(\'USERNAME\')"></li></ul>';
+    let display = '<ul class="user"><li class="username">USERNAME</li><li><input type="button" class="follow-button" value="Follow" onclick="Follow(\'USERNAME\')"></li></ul>';
     return !followingStatus ? display.replace(/USERNAME/g, username) : display.replace(/USERNAME/g, username).replace(/Follow/g, "Unfollow");
 }

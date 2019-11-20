@@ -85,3 +85,6 @@ print(login_pass)
 
 follow_tests = FollowTests.FollowTests(test_server_url, driver)
 follow_tests.follow_inputs('m')
+
+validate_users_pass = follow_tests.validate_users(('mrhi01', 'mrhi02', 'mrhi03', 'mrhi04'))
+print(validate_users_pass)
