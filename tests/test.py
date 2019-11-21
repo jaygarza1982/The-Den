@@ -88,3 +88,14 @@ follow_tests.follow_inputs('m')
 
 validate_users_pass = follow_tests.validate_users(('mrhi01', 'mrhi02', 'mrhi03', 'mrhi04'))
 print(validate_users_pass)
+
+follow_user_pass = follow_tests.follow_user('mrhi02')
+print(follow_user_pass)
+
+follow_user_posts = follow_tests.validate_user_follow('mrhi02')
+print(follow_user_posts)
+
+follow_tests.follow_inputs('mr')
+follow_tests.follow_user('mrhi01')
+unfollow_user_pass = follow_tests.validate_user_unfollow('mrhi01')
+print(unfollow_user_pass)

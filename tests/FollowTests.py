@@ -28,7 +28,46 @@ class FollowTests:
         #Check equality
         return users_in_page == users
 
-    # def follow_user(self, user):
+    def follow_user(self, user):
+        #Get all follow buttons
+        follow_buttons = self.driver.find_elements_by_class_name('follow-button')
+
+        #Get the button that matches with username
+        find = self.__return_elements_as_text(self.driver.find_elements_by_class_name('username')).index(user)
+
+        follow_buttons[find].click()
+
+        #Evaluate buttons again because of click 
+        follow_buttons = self.driver.find_elements_by_class_name('follow-button')
+        find = self.__return_elements_as_text(self.driver.find_elements_by_class_name('username')).index(user)
+        return follow_buttons[find].get_attribute('value') == 'Unfollow'
+
+    def validate_user_follow(self, user):
+        #Click the follow link to toggle posts
+        self.driver.find_element_by_id('follow-link').click()
+
+        #Refresh the browser
+        self.driver.refresh()
+
+        #Check if user that was followed is in the page
+        usernames = self.driver.find_elements_by_class_name('account-name')
+        usernames = self.__return_elements_as_text(usernames)
+
+        return usernames.count(user) > 0
+
+    def validate_user_unfollow(self, user):
+        #Click the follow link to toggle posts
+        self.driver.find_element_by_id('follow-link').click()
+
+        #Refresh the browser
+        self.driver.refresh()
+
+        #Check if user that was followed is in the page
+        usernames = self.driver.find_elements_by_class_name('account-name')
+        usernames = self.__return_elements_as_text(usernames)
+
+        return usernames.count(user) == 0
+        
 
 
     def __return_elements_as_text(self, elements):
