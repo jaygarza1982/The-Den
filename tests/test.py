@@ -1,6 +1,7 @@
 import RegisterTests
 import LoginTests
 import FollowTests
+import PostTests
 import shutil
 import subprocess
 import os
@@ -92,10 +93,18 @@ print(validate_users_pass)
 follow_user_pass = follow_tests.follow_user('mrhi02')
 print(follow_user_pass)
 
+follow_user_pass = follow_tests.follow_user('mrhi04')
+print(follow_user_pass)
+
 follow_user_posts = follow_tests.validate_user_follow('mrhi02')
 print(follow_user_posts)
 
 follow_tests.follow_inputs('mr')
-follow_tests.follow_user('mrhi01')
-unfollow_user_pass = follow_tests.validate_user_unfollow('mrhi01')
+follow_tests.follow_user('mrhi04')
+unfollow_user_pass = follow_tests.validate_user_unfollow('mrhi04')
 print(unfollow_user_pass)
+
+post_tests = PostTests.PostTests(test_server_url, driver)
+post_tests.post_inputs('This post is a test post. It is a good test post.')
+post_test_pass = post_tests.post_test('This post is a test post. It is a good test post.')
+print(post_test_pass)
