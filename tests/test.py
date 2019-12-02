@@ -2,6 +2,7 @@ import RegisterTests
 import LoginTests
 import FollowTests
 import PostTests
+import CommentTests
 import shutil
 import subprocess
 import os
@@ -80,7 +81,8 @@ login_tests.login_inputs('mrhi02', '132423')
 login_fail = login_tests.login_fail()
 print(login_fail)
 
-login_tests.login_inputs('mrhi01', '123')
+current_username = 'mrhi01'
+login_tests.login_inputs(current_username, '123')
 login_pass = login_tests.login_pass()
 print(login_pass)
 
@@ -108,3 +110,12 @@ post_tests = PostTests.PostTests(test_server_url, driver)
 post_tests.post_inputs('This post is a test post. It is a good test post.')
 post_test_pass = post_tests.post_test('This post is a test post. It is a good test post.')
 print(post_test_pass)
+
+
+comment_tests = CommentTests.CommentTests(driver)
+
+test_comment = 'This is a comment written by the unit test program.'
+comment_tests.comment_inputs('mrhi02', test_comment)
+#Pass the user who commented with their comment
+comment_pass = comment_tests.comment_pass(current_username, test_comment)
+print(comment_pass)
