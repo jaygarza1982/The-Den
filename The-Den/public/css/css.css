@@ -17,7 +17,20 @@ input {
 input.text-input {
     font: inherit;
     color: #FFF;
-    margin: 0px;
+    /* margin: 0px; */
+    overflow: visible;
+    box-sizing: border-box;
+    background: #303030;
+    border: none;
+    border-bottom: 2px solid #37ff91;
+    outline: none;
+}
+
+input.text-input-small {
+    width: 25%;
+    min-width: 350px;
+    font: inherit;
+    color: #FFF;
     overflow: visible;
     box-sizing: border-box;
     background: #303030;
@@ -91,6 +104,49 @@ a {
     color: #37ff91;
     background: #1b1b1b;
     /* background: #FFF; */
+}
+
+.button-small {
+    /* width: 25%;
+    height: 50px;
+    border: 0px solid black;
+    background: #303030;
+    border-bottom: 2px solid #37ff91;
+    color: #FFF;
+    font: inherit;
+    outline: none;
+    font-size: 1.2em;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s; */
+    outline: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    width: 150px;
+    height: 45px;
+    box-sizing: border-box;
+    margin: 0;
+    overflow: visible;
+    text-transform: none;
+    -webkit-appearance: button;
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid transparent;
+    color: #fff;
+    background-color: black;
+    /* background-color: #4582EC; */
+    /* border-color: #4582EC; */
+    padding: 0.5rem 1rem;
+    font-size: 1.32875rem;
+    /* line-height: 1.5; */
+    border-radius: 2.688em;
+    cursor: pointer;
+}
+
+.button-small:hover {
+    color: #37ff91;
+    background: #1b1b1b;
 }
 
 
