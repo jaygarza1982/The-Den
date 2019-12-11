@@ -95,14 +95,19 @@ class user:
         comments_file = open(post_path + '/comments', 'w')
         comments_file.close()
 
-    def get_posts(self):
+    def get_posts(self, filters):
         posts = [{}]
         count = 0
         for file in os.listdir('users/' + self.username + '/'):
 
             if file.startswith('post'):
+                post_text = open('users/' + self.username + '/' + file + '/caption', 'r').read()
+                for filter in filters:
+                    if re.match(filter, post_text):
+                        post_text = 'Filtered.'
+                        break
                 posts[count]['user'] = self.username
-                posts[count]['post_text'] = open('users/' + self.username + '/' + file + '/caption', 'r').read()
+                posts[count]['post_text'] = post_text
                 posts[count]['pic_url'] = 'users/' + self.username + '/pic.jpg'
                 posts[count]['comments'] = self.get_post_comments(self.username + '/' + file)
                 posts[count]['id'] = file
@@ -133,14 +138,6 @@ class user:
 
     def make_comment(self, commentRW, username, post_id, comment0):
         commentRW.queue.put((self.username, username, post_id, comment0))
-        # comment_file_path = 'users/' + username + '/' + post_id + '/comments'
-        # # comment_file_contents = open(comment_file_path, 'r', encoding='utf-8').read().strip()
-        
-        # comment = '\n<USER>' + self.username + '</USER><COMMENT>' + comment0 + '</COMMENT><LIKES></LIKES>'
-
-
-        # with open(comment_file_path, 'a') as comment_file:
-        #     comment_file.write(comment)
 
     def follow_user(self, user_to_follow):
         with open(self.following_file_path, 'a') as following_file:
@@ -161,6 +158,18 @@ class user:
         with open(self.following_file_path, 'w') as following_file:
             for follower in current_following:
                 following_file.write(follower + '\n')
+
+    def save_regex_filter(self, regex_list):
+        with open('users/' + self.username + '/regex', 'w') as regex_settings_file:
+            regex_settings_file.write(regex_list)
+
+    def get_regex_filters(self):
+        #Load filters from file
+        regex_filters = set(open('users/' + self.username + '/regex', 'r').read().split('\n'))
+
+        #Remove empty line and return the filters
+        regex_filters.remove('')
+        return regex_filters
 
     #Get a hash and a salt
     def get_hash_and_salt(self, password):

@@ -71,13 +71,14 @@ class server:
             login_token = request.cookies.get('logintoken')
             if (login_token != None):
                 username = session[request.cookies.get('logintoken')]
+                logged_in_user = users.user(username, '')
 
                 followers = open('users/' + username + '/following', 'r').read().strip().split('\n')
                 follower_posts = []
                 
                 for follower in followers:
                     user = users.user(follower, '')
-                    follower_posts += user.get_posts()
+                    follower_posts += user.get_posts(logged_in_user.get_regex_filters())
 
                 # print(follower_posts)
                 return render_template_string(open('public/templates/home-template.html', 'r').read(), posts=follower_posts, current_user=username)
@@ -91,6 +92,12 @@ class server:
             user_posts = users.user(user_to_display, '').get_posts()
 
             return render_template_string(open('public/templates/user-template.html', 'r').read(), posts=user_posts, current_user=username)
+
+        @app.route('/settings')
+        def indexSettings():
+            username = session[request.cookies.get('logintoken')]
+            user = users.user(username, '')
+            return render_template_string(open('public/templates/settings-template.html', 'r').read(), regex_filters=user.get_regex_filters())
 
         @app.route('/comment', methods=['POST'])
         def comment():
@@ -175,6 +182,13 @@ class server:
             current_user.unfollow_user(user_to_unfollow)
 
             return 'Unfollowed'
+
+        @app.route('/regex', methods=['POST'])
+        def indexRegex():
+            current_username = session[request.cookies.get('logintoken')]
+            user = users.user(current_username, '')
+            user.save_regex_filter(request.form['regex-filters'])
+            return 'Sent.'
             
 
         app.run(self.ip, port=3000)
