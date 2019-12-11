@@ -53,44 +53,44 @@ driver = webdriver.Firefox()
 register_tests = RegisterTests.RegisterTests(test_server_url, driver)
 register_tests.register_inputs('mrhi01', '123', '123')
 register_pass = register_tests.register_pass('mrhi01')
-print(register_pass)
+print(register_pass ,' registering')
 
 register_tests.register_inputs('mrhi02', 'FiencX02', 'FiencX02')
 register_pass = register_tests.register_pass('mrhi02')
-print(register_pass)
+print(register_pass , ' registering')
 
 register_tests.register_inputs('mrhi03', 'jcnen&*63hx01', 'jcnen&*63hx01')
 register_pass = register_tests.register_pass('mrhi03')
-print(register_pass)
+print(register_pass , ' registering')
 
 register_tests.register_inputs('mrhi04', 'passfor4', 'passfor4')
 register_pass = register_tests.register_pass('mrhi04')
-print(register_pass)
+print(register_pass , ' registering')
 
 register_tests.register_inputs('a', '123', '132')
 register_mismatch_pass = register_tests.register_mismatch()
-print(register_mismatch_pass)
+print(register_mismatch_pass , ' registering mismatch')
 
 login_tests = LoginTests.LoginTests(test_server_url, driver)
 
 login_tests.login_inputs('mrhi01', '132')
 login_fail = login_tests.login_fail()
-print(login_fail)
+print(login_fail , ' login fail')
 
 login_tests.login_inputs('mrhi02', '132423')
 login_fail = login_tests.login_fail()
-print(login_fail)
+print(login_fail , ' login fail')
 
 current_username = 'mrhi01'
 login_tests.login_inputs(current_username, '123')
 login_pass = login_tests.login_pass()
-print(login_pass)
+print(login_pass , ' login pass')
 
 follow_tests = FollowTests.FollowTests(test_server_url, driver)
 follow_tests.follow_inputs('m')
 
 validate_users_pass = follow_tests.validate_users(('mrhi01', 'mrhi02', 'mrhi03', 'mrhi04'))
-print(validate_users_pass)
+print(validate_users_pass , ' validate users')
 
 follow_user_pass = follow_tests.follow_user('mrhi02')
 print(follow_user_pass)

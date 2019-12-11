@@ -72,6 +72,11 @@ class user:
             following_file.write(self.username)
             following_file.close()
 
+            self.save_regex_filter('')
+            # regex_file = open(user_folder + '/' + 'regex', 'w')
+            # regex_file.write(self.username)
+            # regex_file.close()
+
             self.make_post('This is the first post by ' + self.username + '.')
         else:
             print("The username is not available.")

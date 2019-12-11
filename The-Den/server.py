@@ -88,8 +88,9 @@ class server:
         @app.route('/user')
         def indexUserPage():
             username = session[request.cookies.get('logintoken')]
+            logged_in_user = users.user(username, '')
             user_to_display = request.args.get('user')
-            user_posts = users.user(user_to_display, '').get_posts()
+            user_posts = users.user(user_to_display, '').get_posts(logged_in_user.get_regex_filters())
 
             return render_template_string(open('public/templates/user-template.html', 'r').read(), posts=user_posts, current_user=username)
 
