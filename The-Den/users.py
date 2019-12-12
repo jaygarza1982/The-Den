@@ -57,7 +57,7 @@ class user:
         if (len(rows) == 0):
             if self.password != password_confirm:
                 return 'Passwords do not match.'
-            #print("User has not yet registered.")
+                
             hash_tuple = self.get_hash_and_salt(self.password)
             hashed_pass = hash_tuple[0]
             salt = hash_tuple[1]
@@ -73,9 +73,6 @@ class user:
             following_file.close()
 
             self.save_regex_filter('')
-            # regex_file = open(user_folder + '/' + 'regex', 'w')
-            # regex_file.write(self.username)
-            # regex_file.close()
 
             self.make_post('This is the first post by ' + self.username + '.')
         else:
