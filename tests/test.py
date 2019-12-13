@@ -3,6 +3,7 @@ import LoginTests
 import FollowTests
 import PostTests
 import CommentTests
+from RegexTests import RegexTest
 import shutil
 import subprocess
 import os
@@ -112,6 +113,14 @@ post_test_pass = post_tests.post_test('This post is a test post. It is a good te
 print(post_test_pass, ' post pass')
 
 
+post_tests.post_inputs('This post is a test post. It is contains a needle.')
+post_test_pass = post_tests.post_test('This post is a test post. It is contains a needle.')
+print(post_test_pass, ' post pass with needle')
+
+post_tests.post_inputs('hay')
+post_test_pass = post_tests.post_test('hay')
+print(post_test_pass, ' post pass with hay')
+
 comment_tests = CommentTests.CommentTests(driver)
 
 test_comment = 'This is a comment written by the unit test program.'
@@ -119,5 +128,17 @@ comment_tests.comment_inputs('mrhi02', test_comment)
 #Pass the user who commented with their comment
 comment_pass = comment_tests.comment_pass(current_username, test_comment)
 print(comment_pass, ' comment pass')
+
+regex_test = RegexTest(test_server_url, driver)
+regex_text = '.*needle.*'
+regex_test.regex_inputs(regex_text)
+regex_pass = regex_test.regex_test(regex_text)
+print(regex_pass, ' regex pass')
+
+regex_text = '.*hay.*'
+regex_test.regex_inputs(regex_text)
+regex_pass = regex_test.regex_test(regex_text)
+print(regex_pass, ' regex pass')
+
 
 print('Done.')
