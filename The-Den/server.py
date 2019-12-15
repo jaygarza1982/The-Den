@@ -8,6 +8,7 @@ import users
 import CommentRW
 import threading
 import logging
+from SQLWriter import SQLWriter
 
 class server:
     def __init__(self, ip, logging_setting):
@@ -20,37 +21,27 @@ class server:
         print("current directory is : " + dirpath)
 
         app = Flask(__name__)
-        app.secret_key = 'n93ndk3md093tuv02nc84n9c3md845cneie0384h'
+        app.secret_key = str(os.urandom(256))
         app.config['SESSION_TYPE'] = 'filesystem'
-
 
         commentRW = CommentRW.CommentRW()
         commentRW.start(0.05)
+
         db_lock = threading.Lock()
-
-
+        sql_writer = SQLWriter(db_lock, 'users.db', 'users')
 
         if ('users' not in os.listdir()):
             os.mkdir('users')
 
         if ('users.db' not in os.listdir()):
             print('!!!users.db not found. Attempting to insert table users!!!')
+            #Touch the users.db file
             open('users.db', 'w').close()
-            connection = sqlite3.connect('users.db')
-            cursor = connection.cursor()
-            cursor.execute("""
-                CREATE TABLE users(
-                    username VARCHAR(24),
-                    password BINARY(128),
-                    hash BINARY(128)
-                );
-            """)
-            connection.commit()
-            connection.close()
+            #Create users.db with table
+            sql_writer.create_users_table()
 
         @app.route('/<path:path>')
         def static_proxy(path):
-            #print(path)
             #Handle profile pic request
             if path.startswith('users') and path.endswith('.jpg'):
                 if (os.path.exists(path)):
