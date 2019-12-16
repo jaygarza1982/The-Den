@@ -32,6 +32,6 @@ class SQLWriter:
 
             cursor.execute("SELECT * FROM users WHERE username=?;", (username,))
 
-            return cursor.fetchone()
+            return cursor.fetchall()
         finally:
             self.db_lock.release()

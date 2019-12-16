@@ -19,17 +19,8 @@ class user:
 
     def authUser(self, sql_writer):
         resp = ''
-        # try:
-        #     while db_lock.locked():
-        #         continue
-            
-            # db_lock.acquire()
-        # connection = sqlite3.connect('users.db')
-        # cursor = connection.cursor()
 
-        # cursor.execute("SELECT * FROM users WHERE username=?;", (self.username,))
-
-        credentials = sql_writer.fetch_username(self.username) #cursor.fetchone()
+        credentials = sql_writer.fetch_username(self.username)[0] #cursor.fetchone()
         verify = None
         if not credentials == None:
             #Hash password 
@@ -39,11 +30,6 @@ class user:
             session[cookie] = str(self.username)
             resp = make_response(redirect('/home'))
             resp.set_cookie('logintoken', cookie)
-                # return resp if self.username == credentials[0] and self.password == credentials[1] else 'Invalid credentials'
-            
-        # finally:
-        #     db_lock.release()
-
         return resp if verify else 'Invalid credentials'
 
     def register(self, password_confirm):
