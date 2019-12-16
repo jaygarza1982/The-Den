@@ -6,6 +6,7 @@ import time
 import re
 import CommentRW
 import threading
+from SQLWriter import SQLWriter
 from flask import make_response, redirect, session, render_template_string
 
 #db_lock = threading.Lock()
@@ -16,32 +17,32 @@ class user:
         self.password = password
         self.following_file_path = 'users/' + self.username + '/following'
 
-    def authUser(self, db_lock):
+    def authUser(self, sql_writer):
         resp = ''
-        try:
-            while db_lock.locked():
-                continue
+        # try:
+        #     while db_lock.locked():
+        #         continue
             
-            db_lock.acquire()
-            connection = sqlite3.connect('users.db')
-            cursor = connection.cursor()
+            # db_lock.acquire()
+        # connection = sqlite3.connect('users.db')
+        # cursor = connection.cursor()
 
-            cursor.execute("SELECT * FROM users WHERE username=?;", (self.username,))
+        # cursor.execute("SELECT * FROM users WHERE username=?;", (self.username,))
 
-            credentials = cursor.fetchone()
-            verify = None
-            if not credentials == None:
-                #Hash password 
-                verify = self.get_hash(self.password, credentials[2]) == credentials[1]
+        credentials = sql_writer.fetch_username(self.username) #cursor.fetchone()
+        verify = None
+        if not credentials == None:
+            #Hash password 
+            verify = self.get_hash(self.password, credentials[2]) == credentials[1]
 
-                cookie = str(random.uniform(0, 10000000))
-                session[cookie] = str(self.username)
-                resp = make_response(redirect('/home'))
-                resp.set_cookie('logintoken', cookie)
+            cookie = str(random.uniform(0, 10000000))
+            session[cookie] = str(self.username)
+            resp = make_response(redirect('/home'))
+            resp.set_cookie('logintoken', cookie)
                 # return resp if self.username == credentials[0] and self.password == credentials[1] else 'Invalid credentials'
             
-        finally:
-            db_lock.release()
+        # finally:
+        #     db_lock.release()
 
         return resp if verify else 'Invalid credentials'
 

@@ -121,7 +121,7 @@ class server:
             
             user = users.user(username, password)
 
-            return user.authUser(db_lock)
+            return user.authUser(sql_writer)
 
         @app.route('/register', methods=['POST'])
         def indexRegister():
