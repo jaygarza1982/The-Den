@@ -32,16 +32,13 @@ class user:
             resp.set_cookie('logintoken', cookie)
         return resp if verify else 'Invalid credentials'
 
-    def register(self, password_confirm):
+    def register(self, sql_writer, password_confirm):
         resp = ''
         # Check to see if user exists in database
         connection = sqlite3.connect('users.db')
         cursor = connection.cursor()
 
-        #TODO: Fix SQL injection
-        cursor.execute("SELECT * FROM users WHERE username='" + str(self.username) + "';")
-        rows = cursor.fetchall()
-        if (len(rows) == 0):
+        if (len(sql_writer.fetch_username(self.username)) == 0):
             if self.password != password_confirm:
                 return 'Passwords do not match.'
                 

@@ -131,7 +131,7 @@ class server:
             
             user = users.user(username, password)
 
-            return user.register(password_confirm)
+            return user.register(sql_writer, password_confirm)
 
         @app.route('/user-query')
         def indexUserQuery():
