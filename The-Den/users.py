@@ -1,15 +1,12 @@
 import sqlite3
 import random
 import os
-import hashlib
 import time
 import re
 import CommentRW
 import threading
 from SQLWriter import SQLWriter
 from flask import make_response, redirect, session, render_template_string
-
-#db_lock = threading.Lock()
 
 class user:
     def __init__(self, username, password):
@@ -20,11 +17,11 @@ class user:
     def authUser(self, sql_writer):
         resp = ''
 
-        credentials = sql_writer.fetch_username(self.username)[0] #cursor.fetchone()
+        credentials = sql_writer.fetch_username(self.username)[0]
         verify = None
         if not credentials == None:
             #Hash password 
-            verify = self.get_hash(self.password, credentials[2]) == credentials[1]
+            verify = sql_writer.get_hash(self.password, credentials[2]) == credentials[1]
 
             cookie = str(random.uniform(0, 10000000))
             session[cookie] = str(self.username)
@@ -42,12 +39,7 @@ class user:
             if self.password != password_confirm:
                 return 'Passwords do not match.'
                 
-            hash_tuple = self.get_hash_and_salt(self.password)
-            hashed_pass = hash_tuple[0]
-            salt = hash_tuple[1]
-            cursor.execute("INSERT INTO users VALUES (?, ?, ?);", (self.username, hashed_pass, salt,))
-            connection.commit()
-            connection.close()
+            sql_writer.insert_username(self.username, self.password)
 
             user_folder = 'users/' + self.username
             os.mkdir(user_folder)
@@ -156,29 +148,3 @@ class user:
         #Remove empty line and return the filters
         regex_filters.remove('')
         return regex_filters
-
-    #Get a hash and a salt
-    def get_hash_and_salt(self, password):
-        salt = os.urandom(128) # Remember this
-
-        key = hashlib.pbkdf2_hmac(
-            'sha256', # The hash digest algorithm for HMAC
-            password.encode('utf-8'), # Convert the password to bytes
-            salt, # Provide the salt
-            100000, # It is recommended to use at least 100,000 iterations of SHA-256 
-            dklen=128 # Get a 128 byte key
-        )
-
-        return (key, salt,)
-
-    #Get a hash with a salt
-    def get_hash(self, password, salt):
-        hash = hashlib.pbkdf2_hmac(
-            'sha256', # The hash digest algorithm for HMAC
-            password.encode('utf-8'), # Convert the password to bytes
-            salt, # Provide the salt
-            100000, # It is recommended to use at least 100,000 iterations of SHA-256 
-            dklen=128 # Get a 128 byte key
-        )
-
-        return hash

@@ -1,4 +1,6 @@
 import sqlite3
+import os
+import hashlib
 
 class SQLWriter:
     def __init__(self, db_lock, database_path, table):
@@ -35,3 +37,40 @@ class SQLWriter:
             return cursor.fetchall()
         finally:
             self.db_lock.release()
+    
+    def insert_username(self, username, password):
+        connection = sqlite3.connect(self.database_path)
+        cursor = connection.cursor()
+
+        hash_tuple = self.get_hash_and_salt(password)
+        hashed_pass = hash_tuple[0]
+        salt = hash_tuple[1]
+        cursor.execute("INSERT INTO users VALUES (?, ?, ?);", (username, hashed_pass, salt,))
+        connection.commit()
+        connection.close()
+    
+    #Get a hash and a salt
+    def get_hash_and_salt(self, password):
+        salt = os.urandom(128) # Remember this
+
+        key = hashlib.pbkdf2_hmac(
+            'sha256', # The hash digest algorithm for HMAC
+            password.encode('utf-8'), # Convert the password to bytes
+            salt, # Provide the salt
+            100000, # It is recommended to use at least 100,000 iterations of SHA-256 
+            dklen=128 # Get a 128 byte key
+        )
+
+        return (key, salt,)
+
+    #Get a hash with a salt
+    def get_hash(self, password, salt):
+        hash = hashlib.pbkdf2_hmac(
+            'sha256', # The hash digest algorithm for HMAC
+            password.encode('utf-8'), # Convert the password to bytes
+            salt, # Provide the salt
+            100000, # It is recommended to use at least 100,000 iterations of SHA-256 
+            dklen=128 # Get a 128 byte key
+        )
+
+        return hash
