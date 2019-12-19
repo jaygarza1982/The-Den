@@ -1,0 +1,12 @@
+.logo {
+    font-family: 'Cedarville Cursive', cursive;
+    font-size: 3em;
+}
+
+.input-type {
+    padding-top: 25px;
+}
+
+#txtUsername {
+    margin-top: 15px;
+}

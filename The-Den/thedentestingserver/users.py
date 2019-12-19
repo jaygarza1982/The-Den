@@ -17,18 +17,18 @@ class user:
 
     def authUser(self, sql_writer):
         resp = ''
-        fetched = sql_writer.fetch_username(self.username)
-        if len(fetched) != 0:
-            credentials = fetched[0]
 
+        credentials = sql_writer.fetch_username(self.username)[0]
+        verify = None
+        if not credentials == None:
+            #Hash password 
             verify = sql_writer.get_hash(self.password, credentials[2]) == credentials[1]
-            if verify:
-                cookie = str(random.uniform(0, 10000000))
-                session[cookie] = str(self.username)
-                resp = make_response(redirect('/home'))
-                resp.set_cookie('logintoken', cookie)
-                return resp
-        return 'Invalid credentials'
+
+            cookie = str(random.uniform(0, 10000000))
+            session[cookie] = str(self.username)
+            resp = make_response(redirect('/home'))
+            resp.set_cookie('logintoken', cookie)
+        return resp if verify else 'Invalid credentials'
 
     def register(self, sql_writer, password_confirm):
         resp = ''

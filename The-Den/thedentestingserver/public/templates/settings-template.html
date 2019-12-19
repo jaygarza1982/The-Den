@@ -1,0 +1,48 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Den</title>
+</head>
+
+<link rel="stylesheet" type="text/css" href="../css/css.css">
+<link rel="stylesheet" type="text/css" href="../css/settings.css">
+<script src="../js/settings-actions.js"></script>
+
+<body>
+    <h1>Account Settings</h1>
+
+    <ul id="regex-setting-template" class="regex-setting" style="display: none;">
+        <li>
+            <input type="text" class="text-input-small">
+        </li>
+        <li>
+            <input type="button" value="X" class="delete-button"
+                onclick="removeRegexSetting(this.parentElement.parentElement)">
+        </li>
+    </ul>
+
+    <main>
+        <div class="settings-title">Regex Filters</div>
+
+        <input type="button" class="button-small" value="Add" onclick="addRegexSetting()">
+        <div id="regex-settings">
+            <!-- Load list of regex settings from account here -->
+            {% for filter in regex_filters %}
+            <ul id="regex-setting-template" class="regex-setting">
+                <li>
+                    <input type="text" class="text-input-small" value="{{ filter }}">
+                </li>
+                <li>
+                    <input type="button" value="X" class="delete-button"
+                        onclick="removeRegexSetting(this.parentElement.parentElement)">
+                </li>
+            </ul>
+            {% endfor %}
+        </div>
+        <br>
+        <input type="button" value="Save" class="button-small" onclick="saveRegex()">
+    </main>
+</body>
+
+</html>

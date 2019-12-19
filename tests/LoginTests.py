@@ -28,11 +28,4 @@ class LoginTests:
         #Click to login
         self.driver.find_element_by_class_name('button').click()
 
-        if 'Invalid' in self.driver.page_source:
-            try:
-                self.driver.find_element_by_id('posts')
-                return False
-            except:
-                return True
-        else:
-            return False
+        return 'Invalid' in self.driver.page_source
