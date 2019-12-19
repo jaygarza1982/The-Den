@@ -23,7 +23,8 @@ class user:
 
             verify = sql_writer.get_hash(self.password, credentials[2]) == credentials[1]
             if verify:
-                cookie = str(random.uniform(0, 10000000))
+                #Create a secure random number for cookies
+                cookie = str(os.urandom(1024))
                 session[cookie] = str(self.username)
                 resp = make_response(redirect('/home'))
                 resp.set_cookie('logintoken', cookie)
