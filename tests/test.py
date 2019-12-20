@@ -12,6 +12,7 @@ import threading
 import sys
 
 from selenium import webdriver
+from UserViewTests import UserViewTest
 
 test_server_url = sys.argv[1]
 port = 3000
@@ -139,6 +140,10 @@ regex_text = '.*hay.*'
 regex_test.regex_inputs(regex_text)
 regex_pass = regex_test.regex_test(regex_text)
 print(regex_pass, ' regex pass')
+
+user_view_test = UserViewTest(test_server_url, driver)
+user_view_pass = user_view_test.test_user_view('mrhi01')
+print(user_view_pass, ' user view pass')
 
 
 print('Done.')
