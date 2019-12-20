@@ -25,7 +25,5 @@ class CommentTests:
         #Refresh the browser and check if the comment exists
         self.driver.refresh()
 
-        #TODO: check if exists
-
     def comment_pass(self, username, comment):
-        return self.driver.find_elements_by_class_name('comment')[0].text == username + ': ' + comment
+        return self.driver.find_elements_by_class_name('comment')[0].text == username + '\n' + comment
