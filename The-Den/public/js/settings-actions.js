@@ -39,6 +39,8 @@ function saveRegex() {
     XHR.addEventListener('load', function (event) {
         if (XHR.status == 200) {
             console.log(XHR.response);
+            $(".saved-confirmation").fadeIn(500);
+            $(".saved-confirmation").fadeOut(500);
         }
         else {
             console.log('Follow query failed to send.');

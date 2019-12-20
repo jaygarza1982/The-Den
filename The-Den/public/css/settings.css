@@ -6,6 +6,12 @@
     margin-bottom: 15px;
 }
 
+.saved-confirmation {
+    display: none;
+    color: #37ff91;
+    padding-top: 25px;
+}
+
 input.delete-button {
     width: 150px;
     height: 27px;
@@ -48,8 +54,9 @@ ul.regex-setting li {
     transition-property: transform;
     -webkit-transition-timing-function: ease-out;
     transition-timing-function: ease-out;
-  }
-  .hvr-float:hover, .hvr-float:focus, .hvr-float:active {
+}
+
+.hvr-float:hover {
     -webkit-transform: translateY(-8px);
     transform: translateY(-8px);
-  }
+}
