@@ -15,7 +15,7 @@
                 <a href="#post" onclick="togglePostMenu()">Post</a>
             </li>
             <li>
-                <a href="#follow" onclick="toggleFollowMenu()">Follow</a>
+                <a href="#follow" id="follow-link" onclick="toggleFollowMenu()">Follow</a>
             </li>
             <li>
                 <a href="/settings">Account Settings</a>
@@ -23,7 +23,7 @@
         </ul>
         <div class="follow" id="follow-div">
             <input type="text" class="follow-box" placeholder="Username" id="follow-box" onkeyup="userQuery(this.value)">
-            <div class="user" id="users"></div>
+            <div id="users"></div>
         </div>
     </nav>
     <div class="user-post third-centered" id="user-post" style="display: none;">
@@ -42,6 +42,7 @@
                 <div class="account-name"><a href="/user?user={{ post.user }}">{{ post.user }}</a></div>
                 <img class="profile-pic" src="{{ post.pic_url }}" onerror="this.style.display = 'none'">
                 <p>{{ post.post_text }}</p>
+                <div class="date">{{ post.date }}</div>
                 <img class="comment-icon" src="../comment-white.png" onclick="toggleCommentMenu('{{ post.id }}')">
                 <div class="comment-div">
                     <textarea class="comment-area" placeholder="Comment"></textarea>

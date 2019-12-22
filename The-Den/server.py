@@ -21,7 +21,7 @@ class server:
         print("current directory is : " + dirpath)
 
         app = Flask(__name__)
-        app.secret_key = str(os.urandom(256))
+        app.secret_key = str(os.urandom(512))
         app.config['SESSION_TYPE'] = 'filesystem'
 
         commentRW = CommentRW.CommentRW()
@@ -40,6 +40,13 @@ class server:
             #Create users.db with table
             sql_writer.create_users_table()
 
+        def get_username(self, request):
+            if 'logintoken' in request.cookies:
+                cookie = request.cookies['logintoken']
+                if cookie in session:
+                    return session[cookie]
+            return None
+            
         @app.route('/<path:path>')
         def static_proxy(path):
             #Handle profile pic request
@@ -59,9 +66,9 @@ class server:
 
         @app.route('/home')
         def indexHome():
-            login_token = request.cookies.get('logintoken')
-            if (login_token != None):
-                username = session[request.cookies.get('logintoken')]
+            username = get_username(self, request)
+
+            if (username != None):
                 logged_in_user = users.user(username, '')
 
                 followers = open('users/' + username + '/following', 'r').read().strip().split('\n')
@@ -71,17 +78,22 @@ class server:
                     user = users.user(follower, '')
                     follower_posts += user.get_posts(logged_in_user.get_regex_filters())
 
-                # print(follower_posts)
                 return render_template_string(open('public/templates/home-template.html', 'r').read(), posts=follower_posts, current_user=username)
             else:
-                return 'Please login, man!'
+                return make_response(redirect('/'))
 
         @app.route('/user')
         def indexUserPage():
-            username = session[request.cookies.get('logintoken')]
-            logged_in_user = users.user(username, '')
+            username = get_username(self, request)
+            regex_filters = {}
+            
             user_to_display = request.args.get('user')
-            user_posts = users.user(user_to_display, '').get_posts(logged_in_user.get_regex_filters())
+            if username != None:
+                logged_in_user = users.user(username, '')
+                
+                regex_filters = logged_in_user.get_regex_filters()
+
+            user_posts = users.user(user_to_display, '').get_posts(regex_filters)
 
             return render_template_string(open('public/templates/user-template.html', 'r').read(), posts=user_posts, current_user=username)
 
@@ -181,6 +193,5 @@ class server:
             user = users.user(current_username, '')
             user.save_regex_filter(request.form['regex-filters'])
             return 'Sent.'
-            
 
         app.run(self.ip, port=3000)
