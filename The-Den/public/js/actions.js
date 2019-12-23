@@ -1,31 +1,21 @@
 function togglePostMenu() {
     let userPost = document.getElementById('user-post');
     let posts = document.getElementById('posts');
-    if (userPost.style.display == 'none' || userPost.style.display == '') {
-        userPost.style.display = 'block';
-        posts.style.display = 'none';
-    }
-    else {
-        userPost.style.display = 'none';
-        posts.style.display = 'block';
-    }
+    let followBox = document.getElementById('follow-box');
+
+    userPost.style.display = 'block';
+    posts.style.display = 'none';
+    followBox.style.display = 'none';
 }
 
-function togglePosts() {
+function toggleFollowMenu() {
+    let userPost = document.getElementById('user-post');
     let posts = document.getElementById('posts');
     let followBox = document.getElementById('follow-box');
-    let usersDiv = document.getElementById('users');
 
-    if (posts.style.display == '') {
-        posts.style.display = 'none';
-        followBox.style.display = 'block';
-    }
-    else {
-        followBox.style.display = 'none';
-        posts.style.display = '';
-    }
-    
-    usersDiv.style.display = 'none';
+    posts.style.display = 'none';
+    followBox.style.display = 'block';
+    userPost.style.display = 'none';
 }
 
 function post() {
@@ -93,11 +83,6 @@ function toggleCommentMenu(postID) {
     if (display == 'none' || display == '')
         commentDiv.style.display = 'block';
     else commentDiv.style.display = 'none';
-}
-
-function toggleFollowMenu() {
-    console.log("Toggled follow menu");
-    togglePosts();
 }
 
 function Follow(username) {
