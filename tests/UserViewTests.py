@@ -16,3 +16,9 @@ class UserViewTest:
                 return False
         
         return True
+
+    def test_user_view_logout(self, username):
+        #Delete logintoken cookie to log out
+        self.driver.delete_cookie('logintoken')
+        
+        return self.test_user_view(username)

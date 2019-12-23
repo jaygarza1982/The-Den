@@ -90,7 +90,6 @@ class server:
             user_to_display = request.args.get('user')
             if username != None:
                 logged_in_user = users.user(username, '')
-                
                 regex_filters = logged_in_user.get_regex_filters()
 
             user_posts = users.user(user_to_display, '').get_posts(regex_filters)

@@ -145,5 +145,14 @@ user_view_test = UserViewTest(test_server_url, driver)
 user_view_pass = user_view_test.test_user_view('mrhi01')
 print(user_view_pass, ' user view pass')
 
+#Test viewing user account while logged out
+user_view_pass = user_view_test.test_user_view_logout('mrhi01')
+print(user_view_pass, ' user view pass')
+
+#Log back in
+login_tests.login_inputs(current_username, '123')
+login_pass = login_tests.login_pass()
+print(login_pass, ' login pass')
+
 
 print('Done.')
