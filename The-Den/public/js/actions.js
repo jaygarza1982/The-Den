@@ -80,9 +80,23 @@ function toggleCommentMenu(postID) {
     let commentDiv = document.getElementById(postID).getElementsByClassName('comment-div')[0];
 
     let display = commentDiv.style.display;
-    if (display == 'none' || display == '')
-        commentDiv.style.display = 'block';
-    else commentDiv.style.display = 'none';
+
+    if (display == 'none' || display == '') {
+        $(commentDiv).slideDown(200);
+    }
+    else {
+        //When user hides comment menu, hide the comment button and clear the text box
+        $(commentDiv).slideUp(200, function () {
+            commentDiv.getElementsByTagName('input')[0].style.display = 'none';
+            // console.log(commentDiv.getElementsByClassName('comment-area')[0]);
+            commentDiv.getElementsByClassName('comment-area')[0].value = '';
+        });
+    }
+}
+
+function commentKeyUp(commentButton) {
+    //Fade in comment button when user types
+    $(commentButton).fadeIn(2000);
 }
 
 function Follow(username) {
@@ -133,7 +147,7 @@ function Unfollow(username) {
 function userQuery(prefix) {
     let usersDiv = document.getElementById('users');
     usersDiv.style.display = 'block';
-    
+
     if (prefix.trim() != '') {
         let XHR = new XMLHttpRequest();
         // let formData = new FormData();

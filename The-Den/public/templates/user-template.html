@@ -7,6 +7,7 @@
 <link rel="stylesheet" type="text/css" href="../css/css.css">
 <link rel="stylesheet" type="text/css" href="../css/home.css">
 <script src="../js/actions.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 <body>
     <nav>
@@ -32,7 +33,7 @@
     <div class="user-post third-centered" id="user-post" style="display: none;">
         <textarea name="caption" class="caption-area" placeholder="Caption" id="caption"></textarea>
         <br>
-        <input type="button" value="Post" class="button comment-button" onclick="post()">
+        <input type="button" value="Post" class="comment-button hvr-glow" onclick="post()">
     </div>
     <main>
 
@@ -48,8 +49,8 @@
                 <div class="date">{{ post.date }}</div>
                 <img class="comment-icon" src="../comment-white.png" onclick="toggleCommentMenu('{{ post.id }}')">
                 <div class="comment-div">
-                    <textarea class="comment-area" placeholder="Comment"></textarea>
-                    <input type="button" value="Comment" class="button comment-button"
+                    <textarea class="comment-area" placeholder="Comment" onkeyup="commentKeyUp(this.parentElement.childNodes[3])"></textarea>
+                    <input type="button" value="Comment" class="comment-button hvr-glow" style="display: none;"
                         onclick="postComment('{{ post.id }}', '{{ post.user }}', '{{ current_user }}')">
                 </div>
                 <div class="comments">

@@ -116,8 +116,9 @@ class server:
                     user.make_comment(commentRW, request.form['user'], request.form['postID'], request.form['comment'])
                     return 'Success!'
                 else:
+                    print('Comment: ' + comment)
                     #Not modified
-                    abort(304)
+                    # abort(304)
             return make_response(redirect('/'))
 
         @app.route('/post', methods=['POST'])
