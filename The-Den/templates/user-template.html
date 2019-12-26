@@ -2,7 +2,7 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Den</title>
+    <title>Den - {{ posts[0].user }}</title>
 </head>
 <link rel="stylesheet" type="text/css" href="../css/css.css">
 <link rel="stylesheet" type="text/css" href="../css/home.css">
@@ -10,26 +10,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 <body>
-    <nav>
-        <ul>
-            <li>
-                <a href="/home">Home</a>
-            </li>
-            <li>
-                <a href="#post" onclick="togglePostMenu()">Post</a>
-            </li>
-            <li>
-                <a href="#follow" id="follow-link" onclick="toggleFollowMenu()">Follow</a>
-            </li>
-            <li>
-                <a href="/settings">Account Settings</a>
-            </li>
-        </ul>
-        <div class="follow" id="follow-div">
-            <input type="text" class="follow-box" placeholder="Username" id="follow-box" onkeyup="userQuery(this.value)">
-            <div id="users"></div>
-        </div>
-    </nav>
+    {% include 'nav-template.html' %}
     <div class="user-post third-centered" id="user-post" style="display: none;">
         <textarea name="caption" class="caption-area" placeholder="Caption" id="caption"></textarea>
         <br>

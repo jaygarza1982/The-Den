@@ -7,7 +7,7 @@ import CommentRW
 import threading
 from SQLWriter import SQLWriter
 from datetime import date
-from flask import make_response, redirect, session, render_template_string
+from flask import make_response, redirect, session, render_template
 
 class user:
     def __init__(self, username, password):
@@ -57,7 +57,7 @@ class user:
             print("The username is not available.")
             return 'The username ' + self.username + ' is not available'
 
-        resp = render_template_string(open('public/templates/index-template.html', 'r').read(), new_user=self.username)
+        resp = render_template('index-template.html', new_user=self.username)
 
         return resp
 

@@ -1,0 +1,20 @@
+<nav>
+    <ul>
+        <li>
+            <a href="/home">Home</a>
+        </li>
+        <li>
+            <a href="#post" onclick="togglePostMenu()">Post</a>
+        </li>
+        <li>
+            <a href="#follow" id="follow-link" onclick="toggleFollowMenu()">Follow</a>
+        </li>
+        <li>
+            <a href="/settings">Account Settings</a>
+        </li>
+    </ul>
+    <div class="follow" id="follow-div">
+        <input type="text" class="follow-box" placeholder="Username" id="follow-box" onkeyup="userQuery(this.value)">
+        <div id="users"></div>
+    </div>
+</nav>

@@ -78,7 +78,7 @@ class server:
                     user = users.user(follower, '')
                     follower_posts += user.get_posts(logged_in_user.get_regex_filters())
 
-                return render_template_string(open('public/templates/home-template.html', 'r').read(), posts=follower_posts, current_user=username)
+                return render_template('home-template.html', posts=follower_posts, current_user=username)
             else:
                 return make_response(redirect('/'))
 
@@ -94,14 +94,14 @@ class server:
 
             user_posts = users.user(user_to_display, '').get_posts(regex_filters)
 
-            return render_template_string(open('public/templates/user-template.html', 'r').read(), posts=user_posts, current_user=username)
+            return render_template('user-template.html', posts=user_posts, current_user=username)
 
         @app.route('/settings')
         def indexSettings():
             username = get_username(self, request)
             if username != None:
                 user = users.user(username, '')
-                return render_template_string(open('public/templates/settings-template.html', 'r').read(), regex_filters=user.get_regex_filters())
+                return render_template('settings-template.html', regex_filters=user.get_regex_filters())
             return make_response(redirect('/'))
 
         @app.route('/comment', methods=['POST'])
