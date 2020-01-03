@@ -31,13 +31,13 @@ def clean_up():
     if 'users' in list_dir:
         shutil.rmtree('./users')
 
-    if 'users.db' in list_dir:
-        os.remove('./users.db')
+    if 'database.db' in list_dir:
+        os.remove('./database.db')
 
     try:
-        os.remove('./thedentestingserver/users.db')
+        os.remove('./thedentestingserver/database.db')
     except:
-        print('error removing users.db')
+        print('error removing database.db')
     try:
         shutil.rmtree('./thedentestingserver/users')
     except:

@@ -32,7 +32,7 @@ class SQLWriter:
             connection = sqlite3.connect(self.database_path)
             cursor = connection.cursor()
 
-            cursor.execute("SELECT * FROM users WHERE username=?;", (username,))
+            cursor.execute("SELECT username, password, salt FROM users WHERE username=?;", (username,))
 
             fetched = cursor.fetchall()
             return fetched
@@ -46,7 +46,7 @@ class SQLWriter:
         hash_tuple = self.get_hash_and_salt(password)
         hashed_pass = hash_tuple[0]
         salt = hash_tuple[1]
-        cursor.execute("INSERT INTO users VALUES (?, ?, ?);", (username, hashed_pass, salt,))
+        cursor.execute("INSERT INTO users (username, password, salt) VALUES (?, ?, ?);", (username, hashed_pass, salt,))
         connection.commit()
         connection.close()
     

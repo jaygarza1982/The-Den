@@ -9,6 +9,7 @@ import CommentRW
 import threading
 import logging
 from SQLWriter import SQLWriter
+from DBCreator import DBCreator
 
 class server:
     def __init__(self, ip, logging_setting):
@@ -28,17 +29,19 @@ class server:
         commentRW.start(0.05)
 
         db_lock = threading.Lock()
-        sql_writer = SQLWriter(db_lock, 'users.db', 'users')
+        sql_writer = SQLWriter(db_lock, 'database.db', 'users')
 
         if ('users' not in os.listdir()):
             os.mkdir('users')
 
-        if ('users.db' not in os.listdir()):
-            print('!!!users.db not found. Attempting to insert table users!!!')
+        if ('database.db' not in os.listdir()):
+            print('!!!database.db not found. Attempting to insert table users!!!')
             #Touch the users.db file
-            open('users.db', 'w').close()
+            # open('users.db', 'w').close()
             #Create users.db with table
-            sql_writer.create_users_table()
+            # sql_writer.create_users_table()
+            db_creator = DBCreator('database.db')
+            db_creator.create()
 
         def get_username(self, request):
             if 'logintoken' in request.cookies:
