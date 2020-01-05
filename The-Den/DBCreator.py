@@ -58,10 +58,10 @@ class DBCreator:
         """)
 
         cursor.execute("""
-            CREATE TABLE RegexSettings (
-                lid INTEGER PRIMARY KEY,
-                pid INTEGER,
-                uid INTEGER
+            CREATE TABLE RegexFilters (
+                rid INTEGER PRIMARY KEY,
+                uid INTEGER,
+                filter TEXT
             );
         """)
 
@@ -83,6 +83,10 @@ class DBCreator:
 
         cursor.execute("""
             CREATE INDEX idx_likes_pid ON likes (pid);
+        """)
+
+        cursor.execute("""
+           CREATE INDEX idx_regex_filters_uid on RegexFilters (uid); 
         """)
 
         connection.commit()

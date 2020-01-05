@@ -3,7 +3,6 @@ import random
 import os
 import time
 import re
-import CommentRW
 import threading
 from SQLWriter import SQLWriter
 from datetime import date
@@ -33,26 +32,17 @@ class user:
 
     def register(self, sql_writer, password_confirm):
         resp = ''
-        # Check to see if user exists in database
-        connection = sqlite3.connect('users.db')
-        cursor = connection.cursor()
-
+        #Check to see if user is in database
         if (len(sql_writer.fetch_username(self.username)) == 0):
             if self.password != password_confirm:
                 return 'Passwords do not match.'
                 
             sql_writer.insert_username(self.username, self.password)
+            self.follow_user(sql_writer, self.username)
 
-            user_folder = 'users/' + self.username
-            os.mkdir(user_folder)
+            self.save_regex_filter(sql_writer, '')
 
-            following_file = open(user_folder + '/' + 'following', 'w')
-            following_file.write(self.username)
-            following_file.close()
-
-            self.save_regex_filter('')
-
-            self.make_post('This is the first post by ' + self.username + '.')
+            self.make_post(sql_writer, 'This is the first post by ' + self.username + '.')
         else:
             print("The username is not available.")
             return 'The username ' + self.username + ' is not available'
@@ -61,103 +51,93 @@ class user:
 
         return resp
 
-    def make_post(self, caption):
-        #Append random number for security
-        #post-time-random_number
-        post_stamp = 'post-' + str(time.time()) + '-' + str(random.uniform(0, 999999))
-        post_path = 'users/' + self.username + '/' + post_stamp
-        os.mkdir(post_path)
+    def make_post(self, sql_writer, caption):
+        sql_writer.insert_post(self.username, caption, date.today().strftime("%b %d %Y"))
 
-        #Make creation date file
-        date_str = date.today().strftime("%b %d %Y")
-        with open(post_path + '/creation', 'w') as creation_file:
-            creation_file.write(date_str)
-
-        caption_file = open(post_path + '/caption', 'w')
-        caption_file.write(caption)
-        caption_file.close()
-
-        comments_file = open(post_path + '/comments', 'w')
-        comments_file.close()
-
-    def get_posts(self, filters):
+    def get_posts(self, sql_writer, filters):
         posts = [{}]
-        count = 0
-        for file in os.listdir('users/' + self.username + '/'):
 
-            if file.startswith('post'):
-                post_text = open('users/' + self.username + '/' + file + '/caption', 'r').read()
-                for filter in filters:
-                    if re.match(filter, post_text):
-                        post_text = 'Filtered.'
-                        break
-                posts[count]['user'] = self.username
-                posts[count]['post_text'] = post_text
-                posts[count]['pic_url'] = 'users/' + self.username + '/pic.jpg'
-                posts[count]['comments'] = self.get_post_comments(self.username + '/' + file)
-                posts[count]['date'] = self.get_post_time(self.username + '/' + file)
-                posts[count]['id'] = file
+        posts_query = sql_writer.query_all("""
+            SELECT caption, date, pid FROM posts WHERE uid=(SELECT uid FROM users WHERE username=?);
+        """, (self.username,))
 
-                count += 1
-                posts.append({})
+        for i in range(len(posts_query)):
+            current_query = posts_query[i]
+
+            caption = current_query[0]
+            for regex_filter in filters:
+                if re.match(regex_filter, caption):
+                    caption = 'Filtered.'
+                    break
+            date = current_query[1]
+            pid = current_query[2]
+
+            posts[i]['user'] = self.username
+            posts[i]['post_text'] = caption
+            posts[i]['comments'] = self.get_post_comments(sql_writer, pid)
+            posts[i]['date'] = date
+            posts[i]['id'] = pid
+            
+            posts.append({})
+
         return posts
 
-    def get_post_comments(self, post_stamp):
+    def get_post_comments(self, sql_writer, post_id):
         comments = [{}]
 
-        comment_file = open('users/' + post_stamp + '/comments', 'r', encoding='utf-8').read().strip()
-        lines = comment_file.split('\n')
+        comments_query = sql_writer.query_all('SELECT uid, comment FROM comments WHERE pid=?;', (post_id,))
 
-        count = 0
-        if lines[0] != '':
-            for line in lines:
-                current = line
-                user = re.findall("<USER>(.*?)</USER>", current, re.DOTALL)[0]
-                text = re.findall("<COMMENT>(.*?)</COMMENT>", current, re.DOTALL)[0]
-                comments[count]['user'] = user
-                comments[count]['text'] = text
-                if (count < len(lines)-1):
-                    comments.append({}) #Add a new dict
-                    count += 1
-            return comments
-        return {}
+        for i in range(len(comments_query)):
+            current_comment= comments_query[i]
 
-    def make_comment(self, commentRW, username, post_id, comment0):
-        commentRW.queue.put((self.username, username, post_id, comment0))
+            username = sql_writer.query('SELECT username FROM users WHERE uid=?;', (current_comment[0],))
+            comment_text = current_comment[1]
 
-    def follow_user(self, user_to_follow):
-        with open(self.following_file_path, 'a') as following_file:
-            following_file.write('\n' + user_to_follow)
+            comments[i]['user'] = username
+            comments[i]['text'] = comment_text
 
-    def get_following(self):
-        #Return a set of users that the user is following
-        return set(open(self.following_file_path, 'r').read().split('\n'))
+            comments.append({})
+            
+        return comments[:-1]
+
+    def make_comment(self, sql_writer, post_id, comment):
+        sql_writer.execute_statement('INSERT INTO comments (pid, uid, comment) VALUES (?, (SELECT uid FROM users WHERE username=?), ?);',
+        (post_id, self.username, comment,))
+
+    def follow_user(self, sql_writer, user_to_follow):
+        sql_writer.execute_statement("""INSERT INTO follows (uid, followed_user_id) VALUES ((SELECT uid FROM users WHERE username=?), (SELECT uid FROM users WHERE username=?));""",
+        (self.username, user_to_follow,))
+
+    def get_following(self, sql_writer):  
+        follow_query = sql_writer.query_all('SELECT username FROM users WHERE uid IN (SELECT followed_user_id FROM follows WHERE uid=(SELECT uid FROM users WHERE username=?));', (self.username,))
+        #Query returns a list of tuples so we convert this to just one list
+        followed = []
+        for follow in follow_query:
+            followed.append(follow[0])
+        return set(followed)
 
     def is_following(self, username):
         return username in self.get_following()
 
-    def unfollow_user(self, username):
-        current_following = self.get_following()
-        current_following.remove(username)
-        current_following = list(current_following)
+    def unfollow_user(self, sql_writer, username):
+        sql_writer.execute_statement("""DELETE FROM follows WHERE
+        uid=(SELECT uid FROM users WHERE username=?) AND followed_user_id=(SELECT uid FROM users WHERE username=?);""", (self.username, username,))
 
-        with open(self.following_file_path, 'w') as following_file:
-            for follower in current_following:
-                following_file.write(follower + '\n')
+    def save_regex_filter(self, sql_writer, regex_list):
+        #First drop all from this user
+        sql_writer.execute_statement('DELETE FROM RegexFilters WHERE uid=(SELECT uid FROM users WHERE username=?);', (self.username,))
+        regex_list = regex_list.split('\n')[:-1]
 
-    def get_post_time(self, post_stamp):
-        if 'creation' in os.listdir('users/' + post_stamp):
-            return open('users/' + post_stamp + '/creation', 'r').read()
-        return ''
+        #Insert all filters into the table
+        for i in range(len(regex_list)):
+            sql_writer.execute_statement('INSERT INTO RegexFilters (uid, filter) VALUES ((SELECT uid FROM users WHERE username=?), ?);', (self.username, regex_list[i],))
 
-    def save_regex_filter(self, regex_list):
-        with open('users/' + self.username + '/regex', 'w') as regex_settings_file:
-            regex_settings_file.write(regex_list)
+    def get_regex_filters(self, sql_writer):
+        regex_filters_query = sql_writer.query_all('SELECT filter FROM RegexFilters WHERE uid=(SELECT uid FROM users WHERE username=?);', (self.username,))
+        
+        regex_filters = []
 
-    def get_regex_filters(self):
-        #Load filters from file
-        regex_filters = set(open('users/' + self.username + '/regex', 'r').read().split('\n'))
-
-        #Remove empty line and return the filters
-        regex_filters.remove('')
+        for regex_filter in regex_filters_query:
+            #Remove the last character because this inserts as a carriage return
+            regex_filters.append(regex_filter[0][:-1])
         return regex_filters

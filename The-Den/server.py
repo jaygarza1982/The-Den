@@ -5,7 +5,6 @@ import re
 import os
 import time
 import users
-import CommentRW
 import threading
 import logging
 from SQLWriter import SQLWriter
@@ -25,21 +24,11 @@ class server:
         app.secret_key = str(os.urandom(512))
         app.config['SESSION_TYPE'] = 'filesystem'
 
-        commentRW = CommentRW.CommentRW()
-        commentRW.start(0.05)
-
         db_lock = threading.Lock()
-        sql_writer = SQLWriter(db_lock, 'database.db', 'users')
-
-        if ('users' not in os.listdir()):
-            os.mkdir('users')
-
+        sql_writer = SQLWriter(db_lock, 'database.db')
+        
         if ('database.db' not in os.listdir()):
             print('!!!database.db not found. Attempting to insert table users!!!')
-            #Touch the users.db file
-            # open('users.db', 'w').close()
-            #Create users.db with table
-            # sql_writer.create_users_table()
             db_creator = DBCreator('database.db')
             db_creator.create()
 
@@ -74,12 +63,12 @@ class server:
             if (username != None):
                 logged_in_user = users.user(username, '')
 
-                followers = open('users/' + username + '/following', 'r').read().strip().split('\n')
+                followers = logged_in_user.get_following(sql_writer) #open('users/' + username + '/following', 'r').read().strip().split('\n')
                 follower_posts = []
                 
                 for follower in followers:
                     user = users.user(follower, '')
-                    follower_posts += user.get_posts(logged_in_user.get_regex_filters())
+                    follower_posts += user.get_posts(sql_writer, logged_in_user.get_regex_filters(sql_writer))
 
                 return render_template('home-template.html', posts=follower_posts, current_user=username)
             else:
@@ -93,9 +82,9 @@ class server:
             user_to_display = request.args.get('user')
             if username != None:
                 logged_in_user = users.user(username, '')
-                regex_filters = logged_in_user.get_regex_filters()
+                regex_filters = logged_in_user.get_regex_filters(sql_writer)
 
-            user_posts = users.user(user_to_display, '').get_posts(regex_filters)
+            user_posts = users.user(user_to_display, '').get_posts(sql_writer, regex_filters)
 
             return render_template('user-template.html', posts=user_posts, current_user=username)
 
@@ -104,7 +93,7 @@ class server:
             username = get_username(self, request)
             if username != None:
                 user = users.user(username, '')
-                return render_template('settings-template.html', regex_filters=user.get_regex_filters())
+                return render_template('settings-template.html', regex_filters=user.get_regex_filters(sql_writer))
             return make_response(redirect('/'))
 
         @app.route('/comment', methods=['POST'])
@@ -116,7 +105,7 @@ class server:
                 comment = request.form['comment']
                 if comment.strip() != '':
                     user = users.user(username, '')
-                    user.make_comment(commentRW, request.form['user'], request.form['postID'], request.form['comment'])
+                    user.make_comment(sql_writer, request.form['postID'], request.form['comment'])
                     return 'Success!'
                 else:
                     print('Comment: ' + comment)
@@ -129,7 +118,7 @@ class server:
             username = get_username(self, request)
             if username != None:
                 user = users.user(username, '')
-                user.make_post(request.form['caption'])
+                user.make_post(sql_writer, request.form['caption'])
                 
                 return 'Success!'
             return make_response(redirect('/'))
@@ -158,20 +147,19 @@ class server:
             username = get_username(self, request)
             if username != None:
                 current_user = users.user(username, '')
-                following = current_user.get_following()
+                following = current_user.get_following(sql_writer)
 
                 following_status = [{}]
 
                 username_prefix = request.args.get('prefix')
                 possible_users = ''
                 if (username_prefix.strip() != ''):
-                    usernames = os.listdir('./users')
+                    usernames = sql_writer.fetch_all_usernames(username_prefix)
                     
                     for user in usernames:
-                        if (user.startswith(username_prefix)):
-                            following_status[-1]['username'] = user
-                            following_status[-1]['following'] = user in following
-                            following_status.append({})
+                        following_status[-1]['username'] = user
+                        following_status[-1]['following'] = user in following
+                        following_status.append({})
 
                 return jsonify(following_status[:-1])
             return make_response(redirect('/'))
@@ -182,7 +170,7 @@ class server:
             username_to_follow = request.form['username']
             
             user = users.user(current_user, '')
-            user.follow_user(username_to_follow)
+            user.follow_user(sql_writer, username_to_follow)
 
             return 'Good.'
 
@@ -192,7 +180,7 @@ class server:
             user_to_unfollow = request.form['username']
 
             current_user = users.user(current_username, '')
-            current_user.unfollow_user(user_to_unfollow)
+            current_user.unfollow_user(sql_writer, user_to_unfollow)
 
             return 'Unfollowed'
 
@@ -200,7 +188,7 @@ class server:
         def indexRegex():
             current_username = get_username(self, request)
             user = users.user(current_username, '')
-            user.save_regex_filter(request.form['regex-filters'])
+            user.save_regex_filter(sql_writer, request.form['regex-filters'])
             return 'Sent.'
 
         app.run(self.ip, port=3000)
