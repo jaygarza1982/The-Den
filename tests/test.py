@@ -154,5 +154,10 @@ login_tests.login_inputs(current_username, '123')
 login_pass = login_tests.login_pass()
 print(login_pass, ' login pass')
 
+user_view_test2 = user_view_test.test_user_view_from_follow_menu('mrhi01')
+print(user_view_test2, ' user view from follow menu pass')
+
+delete_regex_test = regex_test.delete_regex('.*hay.*')
+print(delete_regex_test, ' delete regex test with hay')
 
 print('Done.')
