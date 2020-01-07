@@ -36,6 +36,9 @@ function post() {
             captionArea.value = '';
             posts.style.display = 'block';
             userPost.style.display = 'none';
+
+            //Refresh the page
+            window.location.href = '/home';
         });
 
         XHR.addEventListener('error', function (event) {
