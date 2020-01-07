@@ -19,7 +19,7 @@ class FollowTests:
         self.driver.find_element_by_class_name('user')
     
     def validate_users(self, users):
-        users_in_page = self.driver.find_elements_by_class_name('username')
+        users_in_page = self.driver.find_elements_by_class_name('account-name')
 
         #Sort the users we are supposed to see, sort the users we see
         users = sorted(users)
@@ -33,13 +33,13 @@ class FollowTests:
         follow_buttons = self.driver.find_elements_by_class_name('follow-button')
 
         #Get the button that matches with username
-        find = self.__return_elements_as_text(self.driver.find_elements_by_class_name('username')).index(user)
+        find = self.__return_elements_as_text(self.driver.find_elements_by_class_name('account-name')).index(user)
 
         follow_buttons[find].click()
 
         #Evaluate buttons again because of click 
         follow_buttons = self.driver.find_elements_by_class_name('follow-button')
-        find = self.__return_elements_as_text(self.driver.find_elements_by_class_name('username')).index(user)
+        find = self.__return_elements_as_text(self.driver.find_elements_by_class_name('account-name')).index(user)
         return follow_buttons[find].get_attribute('value') == 'Unfollow'
 
     def validate_user_follow(self, user):
@@ -73,5 +73,7 @@ class FollowTests:
     def __return_elements_as_text(self, elements):
         text_list = []
         for i in range(len(elements)):
-            text_list.append(elements[i].text)
+            #Do not append hidden text
+            if elements[i].text != '':
+                text_list.append(elements[i].text)
         return text_list

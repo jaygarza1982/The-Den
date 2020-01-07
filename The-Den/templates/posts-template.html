@@ -3,11 +3,11 @@
 
     {% if post.id is defined %}
     <div class="post" id="{{ post.id }}">
-        <div class="account-name"><a href="/user?user={{ post.user }}">{{ post.user }}</a></div>
+        <div class="account-name hvr-float"><a href="/user?user={{ post.user }}">{{ post.user }}</a></div>
         <img class="profile-pic" src="{{ post.pic_url }}" onerror="this.style.display = 'none'">
         <p>{{ post.post_text }}</p>
         <div class="date">{{ post.date }}</div>
-        <img class="comment-icon" src="../comment-white.png" onclick="toggleCommentMenu('{{ post.id }}')">
+        <img class="comment-icon hvr-float" src="../comment-white.png" onclick="toggleCommentMenu('{{ post.id }}')">
         <div class="comment-div">
             <textarea class="comment-area" placeholder="Comment" onkeyup="commentKeyUp(this.parentElement.childNodes[3])"></textarea>
             <input type="button" value="Comment" class="comment-button hvr-glow" style="display: none;"
@@ -16,7 +16,7 @@
         <div class="comments">
             {% for comment in post.comments %}
             <div class="comment">
-                <div class="account-name"><a href="/user?user={{ comment.user }}">{{ comment.user }}</a></div> {{ comment.text }}
+                <div class="account-name hvr-float"><a href="/user?user={{ comment.user }}">{{ comment.user }}</a></div> {{ comment.text }}
             </div>
             {% endfor %}
         </div>

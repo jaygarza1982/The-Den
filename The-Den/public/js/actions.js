@@ -2,10 +2,12 @@ function togglePostMenu() {
     let userPost = document.getElementById('user-post');
     let posts = document.getElementById('posts');
     let followBox = document.getElementById('follow-box');
-
+    let users = document.getElementById('users');
+    
     userPost.style.display = 'block';
     posts.style.display = 'none';
     followBox.style.display = 'none';
+    users.style.display = 'none';
 }
 
 function toggleFollowMenu() {
@@ -184,6 +186,6 @@ function userQuery(prefix) {
 }
 
 function getUserDisplayHTML(username, followingStatus) {
-    let display = '<ul class="user"><li class="username">USERNAME</li><input type="button" class="follow-button" value="Follow" onclick="Follow(\'USERNAME\')"></ul>';
+    let display = '<ul class="user"><div class="account-name hvr-float"><a href="/user?user=USERNAME">USERNAME</a></div><input type="button" class="follow-button" value="Follow" onclick="Follow(\'USERNAME\')"></ul>';
     return !followingStatus ? display.replace(/USERNAME/g, username) : display.replace(/USERNAME/g, username).replace(/Follow/g, "Unfollow");
 }
