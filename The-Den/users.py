@@ -2,10 +2,11 @@ import sqlite3
 import random
 import os
 import time
+# import datetime
 import re
 import threading
 from SQLWriter import SQLWriter
-from datetime import date
+from datetime import datetime
 from flask import make_response, redirect, session, render_template
 
 class user:
@@ -52,7 +53,7 @@ class user:
         return resp
 
     def make_post(self, sql_writer, caption):
-        sql_writer.insert_post(self.username, caption, date.today().strftime("%b %d %Y"))
+        sql_writer.insert_post(self.username, caption, int(time.time()))
 
     def get_posts(self, sql_writer, filters):
         posts = [{}]

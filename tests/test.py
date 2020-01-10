@@ -13,6 +13,7 @@ import sys
 
 from selenium import webdriver
 from UserViewTests import UserViewTest
+from SortedPostTests import SortedPostsTest
 
 test_server_url = sys.argv[1]
 port = 3000
@@ -159,5 +160,9 @@ print(user_view_test2, ' user view from follow menu pass')
 
 delete_regex_test = regex_test.delete_regex('.*hay.*')
 print(delete_regex_test, ' delete regex test with hay')
+
+sorted_posts_test = SortedPostsTest(test_server_url, driver)
+sorted_pass = sorted_posts_test.post_test('Testing this is at top')
+print(sorted_pass, ' Sorted posts pass')
 
 print('Done.')

@@ -25,3 +25,37 @@
 
     {% endfor %}
 </div>
+<script type="text/javascript">
+    //Sort by date
+    posts = document.getElementsByClassName('post');
+    postsArray = [];
+    for (let i = 0; i < posts.length; i++) {
+        postsArray.push(posts[i]);
+    }
+    postsArray.sort(function (a, b) {
+        date1 = parseInt(a.getElementsByClassName('date')[0].innerHTML);
+        date2 = parseInt(b.getElementsByClassName('date')[0].innerHTML);
+
+        return date2 - date1;
+    });
+    console.log(postsArray);
+
+    // Convert UTC to local
+    dates = document.getElementsByClassName('date');
+
+    for (let i = 0; i < dates.length; i++) {
+        timestamp = dates[i].innerHTML;
+        date = new Date(parseInt(timestamp)*1000);
+        dateSplit = new String(date).split(' ');
+        dates[i].innerHTML = dateSplit[1] + ' ' + dateSplit[2] + ' ' + dateSplit[3];
+    }
+
+    //Clear posts
+    posts = document.getElementsByClassName('posts')[0];
+    posts.innerHTML = '';
+
+    //Repopulate with sorted array
+    for (let i = 0; i < postsArray.length; i++) {
+        posts.append(postsArray[i]);
+    }
+</script>
