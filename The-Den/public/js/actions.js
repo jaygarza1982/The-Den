@@ -192,3 +192,11 @@ function getUserDisplayHTML(username, followingStatus) {
     let display = '<ul class="user"><div class="account-name hvr-float"><a href="/user?user=USERNAME">USERNAME</a></div><input type="button" class="follow-button" value="Follow" onclick="Follow(\'USERNAME\')"></ul>';
     return !followingStatus ? display.replace(/USERNAME/g, username) : display.replace(/USERNAME/g, username).replace(/Follow/g, "Unfollow");
 }
+
+function logout() {
+    //Expire out login token cookie
+    document.cookie = 'logintoken=abc; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+
+    //Home should redirect to login page
+    window.location.href = '/home';
+}

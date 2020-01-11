@@ -14,6 +14,7 @@ import sys
 from selenium import webdriver
 from UserViewTests import UserViewTest
 from SortedPostTests import SortedPostsTest
+from LogoutTest import LogoutTest
 
 test_server_url = sys.argv[1]
 port = 3000
@@ -164,5 +165,9 @@ print(delete_regex_test, ' delete regex test with hay')
 sorted_posts_test = SortedPostsTest(test_server_url, driver)
 sorted_pass = sorted_posts_test.post_test('Testing this is at top')
 print(sorted_pass, ' Sorted posts pass')
+
+logout_test = LogoutTest(test_server_url, driver)
+logout_pass = logout_test.test_logout()
+print(logout_pass, ' logout test')
 
 print('Done.')
