@@ -55,7 +55,10 @@ class user:
     def make_post(self, sql_writer, caption):
         sql_writer.insert_post(self.username, caption, int(time.time()))
 
-    def get_posts(self, sql_writer, filters):
+    def delete_post(self, sql_writer, post_id):
+        sql_writer.execute_statement('DELETE FROM posts WHERE pid=?', (post_id,))
+
+    def get_posts(self, sql_writer, current_user, filters):
         posts = [{}]
 
         posts_query = sql_writer.query_all("""
@@ -78,6 +81,7 @@ class user:
             posts[i]['comments'] = self.get_post_comments(sql_writer, pid)
             posts[i]['date'] = date
             posts[i]['id'] = pid
+            posts[i]['current_user'] = self.username == current_user
             
             posts.append({})
 

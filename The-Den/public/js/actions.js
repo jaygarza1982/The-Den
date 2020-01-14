@@ -20,6 +20,42 @@ function toggleFollowMenu() {
     userPost.style.display = 'none';
 }
 
+function togglePostOptionsMenu(optionsMenu) {
+    if (optionsMenu.style.display == '') {
+        $(optionsMenu).slideDown(50);
+    }
+    else {
+        $(optionsMenu).slideUp(50, function() {
+            optionsMenu.style.display = '';
+        });
+    }
+}
+
+function showDelete(deleteLink, id) {
+    deleteLink.style.display = 'none';
+
+    document.getElementById(id).style.display = 'block';
+}
+
+function deletePost(postID) {
+    let XHR = new XMLHttpRequest();
+    let formData = new FormData();
+    formData.append('postID', postID);
+
+    XHR.addEventListener('load', function (event) {
+        //Remove post from page
+        document.getElementById(postID).outerHTML = '';
+    });
+
+    XHR.addEventListener('error', function (event) {
+        console.log('Failed to send.');
+    });
+
+    XHR.open('POST', '/delete-post');
+
+    XHR.send(formData);
+}
+
 function post() {
     let captionArea = document.getElementById('caption');
     let captionText = captionArea.value;

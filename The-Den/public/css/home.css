@@ -34,7 +34,28 @@
     margin: 0px 20% 90px 25%;
     padding: 0px 10px 12px 0px;
     border-bottom: 2px solid #37ff91;
-} 
+}
+
+.post-options-link {
+    float: right;
+}
+
+.fa.fa-bars {
+    font-size: 1.2em;
+}
+
+.post-options {
+    float: right;
+    width: 25%;
+    padding-right: 15px;
+    display: none;
+}
+
+.post-options ul {
+    display: block;
+    background-color: #303030;
+    text-align: center;
+}
 
 .profile-pic {
     width: 64px;
@@ -43,6 +64,7 @@
 }
 
 .account-name {
+    width: 25%;
     margin-bottom: 10px;
 }
 

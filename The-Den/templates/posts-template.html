@@ -3,6 +3,22 @@
 
     {% if post.id is defined %}
     <div class="post" id="{{ post.id }}">
+        {% if post.current_user %}
+            <a class="post-options-link fa fa-bars hvr-float" href="#post-options" onclick="togglePostOptionsMenu(this.parentElement.childNodes[3])"></a>
+            <div class="post-options">
+                <ul>
+                    <!-- <li class="hvr-float" >
+                        <a href="#edit">Edit</a>
+                    </li> -->
+                    <li class="hvr-float">
+                        <a onclick="showDelete(this, 'delete-{{ post.id }}')" href="#delete">Delete</a>
+                    </li>
+                    <li class="hvr-float">
+                        <a style="display: none;" id="delete-{{ post.id }}" onclick="deletePost(this.parentElement.parentElement.parentElement.parentElement.getAttribute('id'))" href="#delete">Are you sure?</a>
+                    </li>
+                </ul>
+            </div>
+        {% endif %}
         <div class="account-name hvr-float"><a href="/user?user={{ post.user }}">{{ post.user }}</a></div>
         <img class="profile-pic" src="{{ post.pic_url }}" onerror="this.style.display = 'none'">
         <p>{{ post.post_text }}</p>
@@ -38,7 +54,6 @@
 
         return date2 - date1;
     });
-    console.log(postsArray);
 
     // Convert UTC to local
     dates = document.getElementsByClassName('date');

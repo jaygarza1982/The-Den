@@ -68,7 +68,7 @@ class server:
                 
                 for follower in followers:
                     user = users.user(follower, '')
-                    follower_posts += user.get_posts(sql_writer, logged_in_user.get_regex_filters(sql_writer))
+                    follower_posts += user.get_posts(sql_writer, username, logged_in_user.get_regex_filters(sql_writer))
 
                 return render_template('home-template.html', posts=follower_posts, current_user=username)
             else:
@@ -84,7 +84,7 @@ class server:
                 logged_in_user = users.user(username, '')
                 regex_filters = logged_in_user.get_regex_filters(sql_writer)
 
-            user_posts = users.user(user_to_display, '').get_posts(sql_writer, regex_filters)
+            user_posts = users.user(user_to_display, '').get_posts(sql_writer, username, regex_filters)
 
             return render_template('user-template.html', posts=user_posts, current_user=username)
 
@@ -116,11 +116,23 @@ class server:
         @app.route('/post', methods=['POST'])
         def post():
             username = get_username(self, request)
+            
             if username != None:
                 user = users.user(username, '')
                 user.make_post(sql_writer, request.form['caption'])
                 
                 return 'Success!'
+            return make_response(redirect('/'))
+
+        @app.route('/delete-post', methods=['POST'])
+        def delete_post():
+            username = get_username(self, request)
+
+            if username != None:
+                user = users.user(username, '')
+                user.delete_post(sql_writer, request.form['postID'])
+
+                return 'Deleted.'
             return make_response(redirect('/'))
 
         @app.route('/login', methods=['POST'])

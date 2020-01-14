@@ -15,6 +15,7 @@ from selenium import webdriver
 from UserViewTests import UserViewTest
 from SortedPostTests import SortedPostsTest
 from LogoutTest import LogoutTest
+from DeletePostTests import DeletePostTests
 
 test_server_url = sys.argv[1]
 port = 3000
@@ -124,6 +125,10 @@ post_tests.post_inputs('hay')
 post_test_pass = post_tests.post_test('hay')
 print(post_test_pass, ' post pass with hay')
 
+post_tests.post_inputs('This post will be deleted later!')
+post_test_pass = post_tests.post_test('This post will be deleted later!')
+print(post_test_pass, ' post pass with deleted later')
+
 comment_tests = CommentTests.CommentTests(driver)
 
 test_comment = 'This is a comment written by the unit test program.'
@@ -165,6 +170,10 @@ print(delete_regex_test, ' delete regex test with hay')
 sorted_posts_test = SortedPostsTest(test_server_url, driver)
 sorted_pass = sorted_posts_test.post_test('Testing this is at top')
 print(sorted_pass, ' Sorted posts pass')
+
+delete_post_tests = DeletePostTests(test_server_url, driver)
+delete_post_pass = delete_post_tests.test_delete('This post will be deleted later!')
+print(delete_post_pass, ' Delete post pass')
 
 logout_test = LogoutTest(test_server_url, driver)
 logout_pass = logout_test.test_logout()
