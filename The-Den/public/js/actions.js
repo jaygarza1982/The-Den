@@ -22,10 +22,10 @@ function toggleFollowMenu() {
 
 function togglePostOptionsMenu(optionsMenu) {
     if (optionsMenu.style.display == '') {
-        $(optionsMenu).slideDown(50);
+        $(optionsMenu).slideDown(200);
     }
     else {
-        $(optionsMenu).slideUp(50, function() {
+        $(optionsMenu).slideUp(200, function() {
             optionsMenu.style.display = '';
         });
     }

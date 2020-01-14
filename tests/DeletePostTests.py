@@ -1,4 +1,7 @@
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 class DeletePostTests:
     def __init__(self, url, driver):
@@ -6,6 +9,8 @@ class DeletePostTests:
         self.driver = driver
 
     def test_delete(self, caption):
+        self.driver.get(self.url + '/home')
+
         posts_from_driver = self.driver.find_elements_by_class_name('post')
 
         index = -1
@@ -23,6 +28,11 @@ class DeletePostTests:
                     delete_buttons = self.driver.find_elements_by_xpath('//a[@href="#delete"]')
                     for delete_button in delete_buttons:
                         if delete_button.text != '':
+                            #TODO: Find a better way to wait
+                            try:
+                                WebDriverWait(self.driver, 2).until(EC.element_to_be_clickable((By.XPATH, '//a[@href="#delete"]')))
+                            except:
+                                None
                             delete_button.click()
 
                     #The 'Are you sure' button will appear, click that one
