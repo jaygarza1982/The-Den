@@ -1,9 +1,19 @@
-function togglePostMenu() {
+function togglePostMenu(starterText, postElementId) {
     let userPost = document.getElementById('user-post');
     let posts = document.getElementById('posts');
     let followBox = document.getElementById('follow-box');
     let users = document.getElementById('users');
-    
+    let captionArea = document.getElementById('caption');
+    let postButton = document.getElementById('btn-post');
+
+    // console.log(starterText);
+    console.log('post id ' + postElementId);
+
+    if (starterText != undefined) {
+        postButton.setAttribute('onclick', 'post("' + postElementId + '")');
+        captionArea.value = starterText.innerHTML;
+    }
+
     userPost.style.display = 'block';
     posts.style.display = 'none';
     followBox.style.display = 'none';
@@ -56,7 +66,8 @@ function deletePost(postID) {
     XHR.send(formData);
 }
 
-function post() {
+function post(postElementId) {
+    console.log(postElementId);
     let captionArea = document.getElementById('caption');
     let captionText = captionArea.value;
 
@@ -66,13 +77,7 @@ function post() {
         formData.append('caption', captionText);
         XHR.addEventListener('load', function (event) {
             console.log('Sent successfully.');
-
-            let userPost = document.getElementById('user-post');
-            let posts = document.getElementById('posts');
-            captionArea.value = '';
-            posts.style.display = 'block';
-            userPost.style.display = 'none';
-
+            
             //Refresh the page
             window.location.href = '/home';
         });
@@ -80,8 +85,17 @@ function post() {
         XHR.addEventListener('error', function (event) {
             console.log('Caption failed to send.');
         });
-
-        XHR.open('POST', '/post');
+        
+        //If we did not receive a post id, we will post like normal
+        //Otherwise we ask to edit the post
+        if (postElementId == undefined) {
+            XHR.open('POST', '/post');
+        }
+        else {
+            console.log("Editiing post");
+            formData.append('post-id', postElementId);
+            XHR.open('POST', '/edit-post');
+        }
 
         XHR.send(formData);
     }

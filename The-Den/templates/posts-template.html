@@ -7,9 +7,9 @@
             <a class="post-options-link fa fa-bars hvr-float" href="#post-options" onclick="togglePostOptionsMenu(this.parentElement.childNodes[3])"></a>
             <div class="post-options">
                 <ul>
-                    <!-- <li class="hvr-float" >
-                        <a href="#edit">Edit</a>
-                    </li> -->
+                    <li class="hvr-float" >
+                        <a onclick="togglePostMenu(this.parentElement.parentElement.parentElement.parentElement.childNodes[9], '{{ post.id }}')" href="#edit">Edit</a>
+                    </li>
                     <li class="hvr-float">
                         <a onclick="showDelete(this, 'delete-{{ post.id }}')" href="#delete">Delete</a>
                     </li>

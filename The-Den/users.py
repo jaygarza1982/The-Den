@@ -55,8 +55,11 @@ class user:
     def make_post(self, sql_writer, caption):
         sql_writer.insert_post(self.username, caption, int(time.time()))
 
+    def edit_post(self, sql_writer, id, caption):
+        sql_writer.execute_statement('UPDATE posts SET caption = ? WHERE pid=?;', (caption, id,))
+
     def delete_post(self, sql_writer, post_id):
-        sql_writer.execute_statement('DELETE FROM posts WHERE pid=?', (post_id,))
+        sql_writer.execute_statement('DELETE FROM posts WHERE pid=?;', (post_id,))
 
     def get_posts(self, sql_writer, current_user, filters):
         posts = [{}]

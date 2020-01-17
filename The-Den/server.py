@@ -124,6 +124,17 @@ class server:
                 return 'Success!'
             return make_response(redirect('/'))
 
+        @app.route('/edit-post', methods=['POST'])
+        def edit_post():
+            username = get_username(self, request)
+            
+            if username != None:
+                user = users.user(username, '')
+                user.edit_post(sql_writer, request.form['post-id'], request.form['caption'])
+
+                return 'Success!'
+            return make_response(redirect('/'))
+
         @app.route('/delete-post', methods=['POST'])
         def delete_post():
             username = get_username(self, request)

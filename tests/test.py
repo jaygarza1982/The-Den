@@ -16,6 +16,7 @@ from UserViewTests import UserViewTest
 from SortedPostTests import SortedPostsTest
 from LogoutTest import LogoutTest
 from DeletePostTests import DeletePostTests
+from EditPostTests import EditPostTest
 
 test_server_url = sys.argv[1]
 port = 3000
@@ -120,6 +121,10 @@ print(post_test_pass, ' post pass')
 post_tests.post_inputs('This post is a test post. It is contains a needle.')
 post_test_pass = post_tests.post_test('This post is a test post. It is contains a needle.')
 print(post_test_pass, ' post pass with needle')
+
+edit_post_tests = EditPostTest(driver, test_server_url)
+edit_pass = edit_post_tests.edit_test('This post is a test post. It is contains a needle.', 'New caption with needle. It has been edited.')
+print(edit_pass, ' Edit post pass')
 
 post_tests.post_inputs('hay')
 post_test_pass = post_tests.post_test('hay')

@@ -7,6 +7,9 @@ class PostTests:
         self.driver = driver
 
     def post_inputs(self, caption):
+        #Go home
+        self.driver.get(self.url + '/home')
+
         #Click post link
         self.driver.find_element_by_xpath('//a[@href="#post"]').click()
         
