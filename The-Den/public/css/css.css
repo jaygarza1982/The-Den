@@ -138,6 +138,17 @@ a {
     background: #1b1b1b;
 }
 
+div.like {
+    font-size: 50px;
+    margin-right: 15px;
+    transform: rotate(180deg);
+}
+
+div.liked {
+    font-size: 50px;
+    margin-right: 15px;
+}
+
 .hvr-glow {
     display: inline-block;
     vertical-align: middle;
@@ -168,7 +179,6 @@ a {
     -webkit-transform: translateY(-4px);
     transform: translateY(-4px);
 }
-
 
 #login-form {
     border-radius: 15px;

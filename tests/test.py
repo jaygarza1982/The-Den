@@ -18,34 +18,63 @@ from LogoutTest import LogoutTest
 from DeletePostTests import DeletePostTests
 from EditPostTests import EditPostTest
 
-test_server_url = sys.argv[1]
+import mysql.connector
+
+
+conf_contents = []
+with open(sys.argv[1], 'r') as conf_file:
+    conf_contents = conf_file.readlines()
+
+
+
+test_server_url = conf_contents[0]
 port = 3000
 
 def startT():
-    subprocess.call('cd thedentestingserver; python3 run.py ' + test_server_url + ' test', shell=True)
+    subprocess.call('cd thedentestingserver; python3 run.py ' + sys.argv[1], shell=True)
 
 def clean_up():
     list_dir = os.listdir('.')
-    
+    password = os.getenv('sqlpass')
+    subprocess.call('/usr/bin/mysqldump -h localhost -P 3306 -u root -p' + password + ' TheDen | mysql -h localhost -P 3306 -u root -p' + password + ' TheDenTesting', shell=True)
+    db = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        passwd=password,
+    )
+
+    cursor = db.cursor()
+
+    cursor.execute('USE TheDenTesting')
+    cursor.execute('SHOW TABLES')
+    fetched = cursor.fetchall()
+    tables = fetched
+
+    #Clear each table
+    for table in tables:
+        if 'Keys' not in table[0]:
+            cursor.execute('DELETE FROM ' + table[0] + ' WHERE 1=1')
+    db.commit()
+    db.close()
 
     if 'thedentestingserver' in list_dir:
         shutil.rmtree('./thedentestingserver')
     shutil.copytree('../The-Den', './thedentestingserver')
 
-    if 'users' in list_dir:
-        shutil.rmtree('./users')
+    # if 'users' in list_dir:
+    #     shutil.rmtree('./users')
 
-    if 'database.db' in list_dir:
-        os.remove('./database.db')
+    # if 'database.db' in list_dir:
+    #     os.remove('./database.db')
 
-    try:
-        os.remove('./thedentestingserver/database.db')
-    except:
-        print('error removing database.db')
-    try:
-        shutil.rmtree('./thedentestingserver/users')
-    except:
-        print('error removing users folder')
+    # try:
+    #     os.remove('./thedentestingserver/database.db')
+    # except:
+    #     print('error removing database.db')
+    # try:
+    #     shutil.rmtree('./thedentestingserver/users')
+    # except:
+    #     print('error removing users folder')
 
 
 clean_up()

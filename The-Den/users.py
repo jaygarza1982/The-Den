@@ -13,7 +13,7 @@ class user:
     def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.following_file_path = 'users/' + self.username + '/following'
+        self.following_file_path = 'sers/' + self.username + '/following'
 
     def authUser(self, sql_writer):
         resp = ''
@@ -52,20 +52,31 @@ class user:
 
         return resp
 
+    def like_post(self, sql_writer, pid):
+        likes_from_user = sql_writer.query_all('SELECT UserID FROM Likes WHERE PostID=%s AND UserID=(SELECT UserID FROM Users WHERE Username=%s)', (pid, self.username,))
+
+        if len(likes_from_user) == 0:
+            sql_writer.execute_statement('INSERT INTO Likes (UserID, PostID) VALUES ((SELECT UserID FROM Users WHERE Username=%s), %s);', (self.username, pid,))
+        else:
+            sql_writer.execute_statement('DELETE FROM Likes WHERE UserID=(SELECT UserID FROM Users WHERE Username=%s) AND PostID=%s;', (self.username, pid,))
+
     def make_post(self, sql_writer, caption):
-        sql_writer.insert_post(self.username, caption, int(time.time()))
+        sql_writer.execute_statement("""
+            INSERT INTO Posts (UserID, Caption, Date) VALUES ((SELECT UserID FROM Users WHERE Username=%s), %s, %s);
+        """, (self.username, caption, int(time.time()),))
+        # sql_writer.insert_post(self.username, caption, int(time.time()))
 
     def edit_post(self, sql_writer, id, caption):
-        sql_writer.execute_statement('UPDATE posts SET caption = ? WHERE pid=?;', (caption, id,))
+        sql_writer.execute_statement('UPDATE Posts SET Caption = %s WHERE PostID=%s;', (caption, id,))
 
     def delete_post(self, sql_writer, post_id):
-        sql_writer.execute_statement('DELETE FROM posts WHERE pid=?;', (post_id,))
+        sql_writer.execute_statement('DELETE FROM Posts WHERE PostID=%s;', (post_id,))
 
     def get_posts(self, sql_writer, current_user, filters):
         posts = [{}]
 
         posts_query = sql_writer.query_all("""
-            SELECT caption, date, pid FROM posts WHERE uid=(SELECT uid FROM users WHERE username=?);
+            SELECT Caption, Date, PostID FROM Posts WHERE UserID=(SELECT UserID FROM Users WHERE Username=%s);
         """, (self.username,))
 
         for i in range(len(posts_query)):
@@ -85,6 +96,7 @@ class user:
             posts[i]['date'] = date
             posts[i]['id'] = pid
             posts[i]['current_user'] = self.username == current_user
+            posts[i]['likes'] = self.get_post_likes(sql_writer, pid)
             
             posts.append({})
 
@@ -93,12 +105,12 @@ class user:
     def get_post_comments(self, sql_writer, post_id):
         comments = [{}]
 
-        comments_query = sql_writer.query_all('SELECT uid, comment FROM comments WHERE pid=?;', (post_id,))
+        comments_query = sql_writer.query_all('SELECT UserID, Comment FROM Comments WHERE PostID=%s;', (post_id,))
 
         for i in range(len(comments_query)):
             current_comment= comments_query[i]
 
-            username = sql_writer.query('SELECT username FROM users WHERE uid=?;', (current_comment[0],))
+            username = sql_writer.query('SELECT Username FROM Users WHERE UserID=%s;', (current_comment[0],))
             comment_text = current_comment[1]
 
             comments[i]['user'] = username
@@ -108,16 +120,20 @@ class user:
             
         return comments[:-1]
 
+    def get_post_likes(self, sql_writer, post_id):
+        return len(sql_writer.query_all('SELECT UserID FROM Likes WHERE PostID=%s', (post_id,)))
+
     def make_comment(self, sql_writer, post_id, comment):
-        sql_writer.execute_statement('INSERT INTO comments (pid, uid, comment) VALUES (?, (SELECT uid FROM users WHERE username=?), ?);',
+        sql_writer.execute_statement('INSERT INTO Comments (PostID, UserID, Comment) VALUES (%s, (SELECT UserID FROM Users WHERE Username=%s), %s);',
         (post_id, self.username, comment,))
 
     def follow_user(self, sql_writer, user_to_follow):
-        sql_writer.execute_statement("""INSERT INTO follows (uid, followed_user_id) VALUES ((SELECT uid FROM users WHERE username=?), (SELECT uid FROM users WHERE username=?));""",
+        sql_writer.execute_statement("""INSERT INTO Follows (UserID, FollowedUserID)
+        VALUES ((SELECT UserID FROM Users WHERE Username=%s), (SELECT UserID FROM Users WHERE Username=%s));""",
         (self.username, user_to_follow,))
 
     def get_following(self, sql_writer):  
-        follow_query = sql_writer.query_all('SELECT username FROM users WHERE uid IN (SELECT followed_user_id FROM follows WHERE uid=(SELECT uid FROM users WHERE username=?));', (self.username,))
+        follow_query = sql_writer.query_all('SELECT Username FROM Users WHERE UserID IN (SELECT FollowedUserID FROM Follows WHERE UserID=(SELECT UserID FROM Users WHERE Username=%s));', (self.username,))
         #Query returns a list of tuples so we convert this to just one list
         followed = []
         for follow in follow_query:
@@ -128,20 +144,20 @@ class user:
         return username in self.get_following()
 
     def unfollow_user(self, sql_writer, username):
-        sql_writer.execute_statement("""DELETE FROM follows WHERE
-        uid=(SELECT uid FROM users WHERE username=?) AND followed_user_id=(SELECT uid FROM users WHERE username=?);""", (self.username, username,))
+        sql_writer.execute_statement("""DELETE FROM Follows WHERE
+        UserID=(SELECT UserID FROM Users WHERE Username=%s) AND FollowedUserID=(SELECT UserID FROM Users WHERE Username=%s);""", (self.username, username,))
 
     def save_regex_filter(self, sql_writer, regex_list):
         #First drop all from this user
-        sql_writer.execute_statement('DELETE FROM RegexFilters WHERE uid=(SELECT uid FROM users WHERE username=?);', (self.username,))
+        sql_writer.execute_statement('DELETE FROM RegexFilters WHERE UserID=(SELECT UserID FROM Users WHERE username=%s);', (self.username,))
         regex_list = regex_list.split('\n')[:-1]
 
         #Insert all filters into the table
         for i in range(len(regex_list)):
-            sql_writer.execute_statement('INSERT INTO RegexFilters (uid, filter) VALUES ((SELECT uid FROM users WHERE username=?), ?);', (self.username, regex_list[i],))
+            sql_writer.execute_statement('INSERT INTO RegexFilters (UserID, filter) VALUES ((SELECT UserID FROM Users WHERE Username=%s), %s);', (self.username, regex_list[i],))
 
     def get_regex_filters(self, sql_writer):
-        regex_filters_query = sql_writer.query_all('SELECT filter FROM RegexFilters WHERE uid=(SELECT uid FROM users WHERE username=?);', (self.username,))
+        regex_filters_query = sql_writer.query_all('SELECT Filter FROM RegexFilters WHERE UserID=(SELECT UserID FROM Users WHERE Username=%s);', (self.username,))
         
         regex_filters = []
 

@@ -23,6 +23,8 @@
         <img class="profile-pic" src="{{ post.pic_url }}" onerror="this.style.display = 'none'">
         <p>{{ post.post_text }}</p>
         <div class="date">{{ post.date }}</div>
+        <div class="likes">{{ post.likes }} likes</div>
+        <div id="like-{{ post.id }}" class="like fa fa-angle-double-up hvr-float" onclick="likePost('{{ post.id }}')"></div>
         <img class="comment-icon hvr-float" src="../comment-white.png" onclick="toggleCommentMenu('{{ post.id }}')">
         <div class="comment-div">
             <textarea class="comment-area" placeholder="Comment" onkeyup="commentKeyUp(this.parentElement.childNodes[3])"></textarea>

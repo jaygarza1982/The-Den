@@ -1,33 +1,45 @@
-import sqlite3
+import mysql.connector
 import os
 import hashlib
 
-
 class SQLWriter:
-    def __init__(self, db_lock, database_path):
-        self.db_lock = db_lock
+    def __init__(self, database_path):
         self.database_path = database_path
+        self.sql_pass = os.getenv('sqlpass')
 
-    def fetch_username(self, username):
-        try:
-            while self.db_lock.locked():
-                continue
-            self.db_lock.acquire()
+    def query_all(self, statement, args):
+        db = mysql.connector.connect(
+            host = "localhost",
+            user = "root",
+            passwd = self.sql_pass,
+            database = self.database_path
+        )
+        cursor = db.cursor()
 
-            connection = sqlite3.connect(self.database_path)
-            cursor = connection.cursor()
+        cursor.execute(statement, args)
+        fetched = cursor.fetchall()
+        db.close()
 
-            cursor.execute(
-                "SELECT username, password, salt FROM users WHERE username=?;", (username,))
+        return fetched
 
-            fetched = cursor.fetchall()
-            return fetched
-        finally:
-            self.db_lock.release()
+    def query(self, statement, args):
+        db = mysql.connector.connect(
+            host = "localhost",
+            user = "root",
+            passwd = self.sql_pass,
+            database = self.database_path
+        )
+        cursor = db.cursor()
+
+        cursor.execute(statement, args)
+        fetched = cursor.fetchone()
+        db.close()
+
+        return fetched[0]
 
     def fetch_all_usernames(self, prefix):
         #TODO: Use wildcards
-        usernames_query = self.query_all('SELECT username FROM users WHERE 1=1;', tuple())
+        usernames_query = self.query_all('SELECT Username FROM Users WHERE 1=1;', tuple())
 
         usernames = []
         for username in usernames_query:
@@ -35,68 +47,52 @@ class SQLWriter:
                 usernames.append(username[0])
 
         return usernames
+    
+    def execute_statement(self, statement, args):
+        db = mysql.connector.connect(
+            host = "localhost",
+            user = "root",
+            passwd = self.sql_pass,
+            database = self.database_path
+        )
+        cursor = db.cursor()
+
+        cursor.execute(statement, args)
+
+        db.commit()
+        db.close()
+
+    def fetch_username(self, username):
+        db = mysql.connector.connect(
+            host = "localhost",
+            user = "root",
+            passwd = self.sql_pass,
+            database = self.database_path
+        )
+        cursor = db.cursor()
+
+        cursor.execute(
+            "SELECT Username, Password, Salt FROM Users WHERE Username=%s;", (username,))
+
+        fetched = cursor.fetchall()
+        return fetched
 
     def insert_username(self, username, password):
-        connection = sqlite3.connect(self.database_path)
-        cursor = connection.cursor()
+        db = mysql.connector.connect(
+            host = "localhost",
+            user = "root",
+            passwd = self.sql_pass,
+            database = self.database_path
+        )
+        cursor = db.cursor()
 
         hash_tuple = self.get_hash_and_salt(password)
         hashed_pass = hash_tuple[0]
         salt = hash_tuple[1]
-        cursor.execute("INSERT INTO users (username, password, salt) VALUES (?, ?, ?);",
+        cursor.execute("INSERT INTO Users (Username, Password, Salt) VALUES (%s, %s, %s);",
                        (username, hashed_pass, salt,))
-        connection.commit()
-        connection.close()
-
-    def insert_post(self, username, caption, date):
-        connection = sqlite3.connect(self.database_path)
-        cursor = connection.cursor()
-
-        cursor.execute("""
-            INSERT INTO posts (uid, caption, date) VALUES ((SELECT uid FROM users WHERE username=?), ?, ?);
-        """, (username, caption, date,))
-
-        connection.commit()
-        connection.close()
-
-    def execute_statement(self, statement, args):
-        connection = sqlite3.connect(self.database_path)
-        cursor = connection.cursor()
-
-        cursor.execute(statement, args)
-
-        connection.commit()
-        connection.close()
-
-    def execute_many(self, statement, args):
-        connection = sqlite3.connect(self.database_path)
-        cursor = connection.cursor()
-
-        cursor.executemany(statement, args)
-
-        connection.commit()
-        connection.close()
-    
-
-    def query_all(self, statement, args):
-        connection = sqlite3.connect(self.database_path)
-        cursor = connection.cursor()
-
-        cursor.execute(statement, args)
-        fetched = cursor.fetchall()
-        connection.close()
-
-        return fetched
-
-    def query(self, statement, args):
-        connection = sqlite3.connect(self.database_path)
-        cursor = connection.cursor()
-
-        cursor.execute(statement, args)
-        fetched = cursor.fetchone()
-        connection.close()
-
-        return fetched[0]
+        db.commit()
+        db.close()
 
     # Get a hash and a salt
     def get_hash_and_salt(self, password):

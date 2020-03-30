@@ -11,11 +11,12 @@ from SQLWriter import SQLWriter
 from DBCreator import DBCreator
 
 class server:
-    def __init__(self, ip, logging_setting):
+    def __init__(self, ip, logging_setting, database):
         if not logging_setting:
             log = logging.getLogger('werkzeug')
             log.setLevel(logging.ERROR)
         self.ip = ip
+        self.database = database
         
         dirpath = os.getcwd()
         print("current directory is : " + dirpath)
@@ -24,13 +25,12 @@ class server:
         app.secret_key = str(os.urandom(512))
         app.config['SESSION_TYPE'] = 'filesystem'
 
-        db_lock = threading.Lock()
-        sql_writer = SQLWriter(db_lock, 'database.db')
+        sql_writer = SQLWriter(self.database)
         
-        if ('database.db' not in os.listdir()):
-            print('!!!database.db not found. Attempting to insert table users!!!')
-            db_creator = DBCreator('database.db')
-            db_creator.create()
+        # if ('database.db' not in os.listdir()):
+        #     print('!!!database.db not found. Attempting to insert table users!!!')
+        #     db_creator = DBCreator('database.db')
+        #     db_creator.create()
 
         def get_username(self, request):
             if 'logintoken' in request.cookies:
@@ -144,6 +144,17 @@ class server:
                 user.delete_post(sql_writer, request.form['postID'])
 
                 return 'Deleted.'
+            return make_response(redirect('/'))
+
+        @app.route('/like', methods=['POST'])
+        def like():
+            username = get_username(self, request)
+
+            if username != None:
+                user = users.user(username, '')
+                user.like_post(sql_writer, request.form['postID'])
+
+                return 'Liked.'
             return make_response(redirect('/'))
 
         @app.route('/login', methods=['POST'])

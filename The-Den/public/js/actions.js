@@ -47,6 +47,31 @@ function showDelete(deleteLink, id) {
     document.getElementById(id).style.display = 'block';
 }
 
+function likePost(postID) {
+    let XHR = new XMLHttpRequest();
+    let formData = new FormData();
+    formData.append('postID', postID);
+
+    XHR.addEventListener('load', function (event) {
+        likeButton = document.getElementById('like-' + postID);
+        console.log(likeButton);
+        if (likeButton.getAttribute('class').indexOf('liked') == -1) {
+            document.getElementById('like-' + postID).setAttribute('class', 'liked fa fa-angle-double-up hvr-float');
+        }
+        else {
+            document.getElementById('like-' + postID).setAttribute('class', 'like fa fa-angle-double-up hvr-float');
+        }
+    });
+
+    XHR.addEventListener('error', function (event) {
+        console.log('Failed to send.');
+    });
+
+    XHR.open('POST', '/like');
+
+    XHR.send(formData);
+}
+
 function deletePost(postID) {
     let XHR = new XMLHttpRequest();
     let formData = new FormData();
